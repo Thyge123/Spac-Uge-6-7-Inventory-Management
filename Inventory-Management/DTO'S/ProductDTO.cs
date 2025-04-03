@@ -6,5 +6,7 @@
         public string ProductName { get; set; }
         public decimal Price { get; set; }
         public CategoryDTO Category { get; set; }
+
+
     }
 }

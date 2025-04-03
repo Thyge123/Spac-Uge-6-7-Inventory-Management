@@ -18,9 +18,15 @@ namespace Inventory_Management.Controllers
 
         // GET: api/products
         [HttpGet]
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts([FromQuery] string? sortBy, [FromQuery] bool isDescending = false)
         {
-            var products = await _productManager.GetAllProductsAsync();
+            var filterModel = new SortModel
+            {
+                SortBy = sortBy,
+                isDescending = isDescending
+            };
+
+            var products = await _productManager.GetAllProductsAsync(filterModel);
             if (products == null || !products.Any())
             {
                 return NotFound("No Products found");
