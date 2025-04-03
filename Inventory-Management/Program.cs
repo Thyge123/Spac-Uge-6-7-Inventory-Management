@@ -1,4 +1,5 @@
 using Inventory_Management.Context;
+using Inventory_Management.Managers;
 using Inventory_Management.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,9 @@ using (var db = new InventoryDbContext(builder.Services.BuildServiceProvider().G
     db.Database.EnsureCreated();
     Console.WriteLine("Connected to the database successfully!");
 }
+
+builder.Services.AddScoped<ProductManager>();
+builder.Services.AddScoped<CategoryManager>();
 
 builder.Services.AddScoped<RetailDataParser>();
 
