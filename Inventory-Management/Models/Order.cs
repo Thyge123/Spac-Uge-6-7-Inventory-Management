@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Inventory_Management.Model
 {
@@ -18,6 +19,7 @@ namespace Inventory_Management.Model
 
 
         // Navigation properties
+        [JsonIgnore]
         [ForeignKey("CustomerId")]
         public virtual Customer Customer { get; set; }
 

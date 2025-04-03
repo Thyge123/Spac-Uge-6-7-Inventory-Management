@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Inventory_Management.Model
 {
@@ -12,6 +13,7 @@ namespace Inventory_Management.Model
         public string City { get; set; }
 
         // Navigation property
+        [JsonIgnore]
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }
