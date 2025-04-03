@@ -1,4 +1,6 @@
 using Inventory_Management.Context;
+using Inventory_Management.Factories;
+using Inventory_Management.Interfaces;
 using Inventory_Management.Managers;
 using Inventory_Management.Models;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +28,8 @@ using (var db = new InventoryDbContext(builder.Services.BuildServiceProvider().G
 
 builder.Services.AddScoped<ProductManager>();
 builder.Services.AddScoped<CategoryManager>();
+builder.Services.AddSingleton<IProductFactory, ProductFactory>();
+
 
 builder.Services.AddScoped<RetailDataParser>();
 
