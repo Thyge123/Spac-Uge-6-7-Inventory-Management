@@ -68,5 +68,24 @@ namespace Inventory_Management.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // PUT: api/products/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] UpdateProductDTO item)
+        {
+            try
+            {
+                var updatedItem = await _productManager.UpdateProduct(id, item.ProductName, item.Price, item.CategoryId);
+                if (updatedItem == null)
+                {
+                    return NotFound("No product found with specified Id");
+                }
+                return Ok(updatedItem);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

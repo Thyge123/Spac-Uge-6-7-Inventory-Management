@@ -91,5 +91,30 @@ namespace Inventory_Management.Managers
             // Return domain object
             return item;
         }
+
+        // Updates an existing product in the database
+        public async Task<Product> UpdateProduct(int productId, string productName, decimal price, int? categoryId)
+        {
+            // Fetch the product from the database
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+            {
+                throw new InvalidOperationException("Product not found"); // Product not found
+            }
+            // Update the product details
+            product.ProductName = productName;
+            product.CategoryId = (int)categoryId;
+
+            // Only update category if a value was provided
+            if (categoryId.HasValue && categoryId.Value > 0)
+            {
+                product.CategoryId = categoryId.Value;
+            }
+
+            product.Price = price;
+            // Save changes to the database
+            await _context.SaveChangesAsync();
+            return product; // Update successful
+        }
     }
 }
