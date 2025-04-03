@@ -17,6 +17,14 @@ namespace Inventory_Management.Controllers
             _context = context;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        {
+            return await _context.Orders
+                .Include(o => o.OrderItems)
+                .ToListAsync();
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(int id)
         {
