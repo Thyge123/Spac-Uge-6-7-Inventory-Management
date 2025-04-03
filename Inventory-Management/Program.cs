@@ -1,20 +1,24 @@
+using Inventory_Management;
 using Inventory_Management.Context;
 using Inventory_Management.Models;
 using Microsoft.EntityFrameworkCore;
 
+DotEnv.Load(Path.Combine(Directory.GetCurrentDirectory(), "../.env"));
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Configuration.AddEnvironmentVariables();
 
+Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+// Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-//builder.Services.AddDbContext<InventoryDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDbContextPool<InventoryDbContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    opt.UseNpgsql(Environment.GetEnvironmentVariable("DefaultConnection")));
 
 // If connection to the database is successful, print a message to the console
 using (var db = new InventoryDbContext(builder.Services.BuildServiceProvider().GetRequiredService<DbContextOptions<InventoryDbContext>>()))
