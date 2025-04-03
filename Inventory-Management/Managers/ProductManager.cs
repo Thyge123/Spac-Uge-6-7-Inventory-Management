@@ -116,5 +116,20 @@ namespace Inventory_Management.Managers
             await _context.SaveChangesAsync();
             return product; // Update successful
         }
+
+        // Deletes a product from the database
+        public async Task DeleteProduct(int productId)
+        {
+            // Fetch the product from the database
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+            {
+                throw new InvalidOperationException("Product not found"); // Product not found
+            }
+            // Remove the product from the database
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+            return; // Deletion successful
+        }
     }
 }

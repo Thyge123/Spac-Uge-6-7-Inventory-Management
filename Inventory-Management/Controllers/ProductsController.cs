@@ -87,5 +87,20 @@ namespace Inventory_Management.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // DELETE: api/products/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            try
+            {
+                await _productManager.DeleteProduct(id); // Delete the product
+                return Ok($"Product with Id {id} has been deleted"); // Return success message
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message); // Return error message if product not found
+            }
+        }
     }
 }
