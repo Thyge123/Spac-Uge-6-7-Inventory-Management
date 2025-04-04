@@ -83,6 +83,7 @@ namespace Inventory_Management.Controllers
             }
         }
 
+        [Route("status/{id}")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] OrderStatusUpdateDto orderUpdateDto)
         {
