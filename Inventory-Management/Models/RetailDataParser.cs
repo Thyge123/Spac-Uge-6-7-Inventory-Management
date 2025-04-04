@@ -16,6 +16,14 @@ namespace Inventory_Management.Models
             _context = context;
         }
 
+        public Order.Status GenerateRandomStatus()
+        {
+            var statuses = new List<Order.Status> { Order.Status.Pending, Order.Status.Completed, Order.Status.Cancelled };
+            Random random = new Random();
+            int index = random.Next(statuses.Count);
+            return statuses[index];
+        }
+
         public void ParseAndSaveData(string csvFilePath)
         {
             // Dictionary to track orders by a composite key (customer_id + order_date)
@@ -88,6 +96,7 @@ namespace Inventory_Management.Models
                             Customer = customerTracker[record.customer_id],
                             OrderDate = record.order_date,
                             PaymentMethod = record.payment_method,
+                            OrderStatus = GenerateRandomStatus(),
                         };
                         orderTracker[orderKey] = order;
                     }

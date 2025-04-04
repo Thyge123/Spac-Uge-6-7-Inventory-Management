@@ -17,6 +17,14 @@ namespace Inventory_Management.Model
         [StringLength(50)]
         public string PaymentMethod { get; set; }
 
+        public enum Status
+        {
+            Pending,
+            Completed,
+            Cancelled
+        }
+
+        public Status OrderStatus { get; set; }
 
         // Navigation properties
         [JsonIgnore]

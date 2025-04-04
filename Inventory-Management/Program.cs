@@ -30,6 +30,7 @@ using (var db = new InventoryDbContext(builder.Services.BuildServiceProvider().G
     Console.WriteLine("Connected to the database successfully!");
 }
 
+builder.Services.AddScoped<OrderManager>();
 builder.Services.AddScoped<ProductManager>();
 builder.Services.AddScoped<CategoryManager>();
 builder.Services.AddSingleton<IProductFactory, ProductFactory>();
@@ -39,9 +40,9 @@ builder.Services.AddScoped<RetailDataParser>();
 
 // Uncomment the following code to parse and save the data from the CSV file into the database
 
-// RetailDataParser retailDataParser = builder.Services.BuildServiceProvider().GetRequiredService<RetailDataParser>();
+RetailDataParser retailDataParser = builder.Services.BuildServiceProvider().GetRequiredService<RetailDataParser>();
 
-// retailDataParser.ParseAndSaveData("C:\\Users\\spac-25\\source\\repos\\Inventory-Management\\Inventory-Management\\synthetic_online_retail_data.csv");
+retailDataParser.ParseAndSaveData("C:\\Users\\spac-25\\source\\repos\\Inventory-Management\\Inventory-Management\\synthetic_online_retail_data.csv");
 
 var app = builder.Build();
 
