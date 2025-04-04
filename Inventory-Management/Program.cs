@@ -42,7 +42,7 @@ builder.Services.AddScoped<RetailDataParser>();
 
 RetailDataParser retailDataParser = builder.Services.BuildServiceProvider().GetRequiredService<RetailDataParser>();
 
-retailDataParser.ParseAndSaveData("C:\\Users\\spac-25\\source\\repos\\Inventory-Management\\Inventory-Management\\synthetic_online_retail_data.csv");
+retailDataParser.ParseAndSaveData(Path.Combine(Directory.GetCurrentDirectory(), "../data/synthetic_online_retail_data.csv"));
 
 var app = builder.Build();
 
