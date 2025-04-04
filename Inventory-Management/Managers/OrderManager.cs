@@ -44,5 +44,15 @@ namespace Inventory_Management.Managers
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task UpdateOrderStatus(int id, Order.Status status)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order != null)
+            {
+                order.OrderStatus = status;
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }
