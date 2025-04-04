@@ -17,6 +17,29 @@ namespace Inventory_Management.Controllers
             _context = context;
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteOrder(int id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
+            if (order == null)
+            {
+                return NotFound($"Order with ID {id} not found");
+            }
+
+            // Remove all order items first
+            _context.OrderItems.RemoveRange(order.OrderItems);
+            
+            // Then remove the order
+            _context.Orders.Remove(order);
+            
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
