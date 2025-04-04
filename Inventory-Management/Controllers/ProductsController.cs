@@ -1,4 +1,8 @@
-﻿using Inventory_Management.Managers;
+﻿using Inventory_Management.DTO_S;
+using Inventory_Management.Factories;
+using Inventory_Management.Interfaces;
+using Inventory_Management.Managers;
+using Inventory_Management.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory_Management.Controllers
@@ -14,9 +18,15 @@ namespace Inventory_Management.Controllers
 
         // GET: api/products
         [HttpGet]
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts([FromQuery] string? sortBy, [FromQuery] bool isDescending = false)
         {
-            var products = await _productManager.GetAllProductsAsync();
+            var filterModel = new SortModel
+            {
+                SortBy = sortBy,
+                isDescending = isDescending
+            };
+
+            var products = await _productManager.GetAllProductsAsync(filterModel);
             if (products == null || !products.Any())
             {
                 return NotFound("No Products found");
@@ -34,6 +44,69 @@ namespace Inventory_Management.Controllers
                 return NotFound("No product found with specified Id");
             }
             return Ok(product);
+        }
+
+        // POST: api/products
+        [HttpPost]
+        public async Task<IActionResult> CreateProduct([FromBody] CreateProductDTO item)
+        {
+            // Validate the incoming data
+            try
+            {
+                // Create a new inventory item
+                var createdItem = await _productManager.CreateProduct(
+                    item.ProductId,
+                    item.CategoryId,
+                    item.ProductName,
+                    item.Price
+                );
+
+                // Check if the item was created successfully, if not return a bad request
+                if (createdItem == null)
+                {
+                    return BadRequest("Failed to create the product");
+                }
+
+                return CreatedAtAction(nameof(GetProductById), new { id = createdItem.ProductId }, createdItem); // Return the created item with a 201 status code
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // PUT: api/products/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] UpdateProductDTO item)
+        {
+            try
+            {
+                var updatedItem = await _productManager.UpdateProduct(id, item.ProductName, item.Price, item.CategoryId);
+                if (updatedItem == null)
+                {
+                    return NotFound("No product found with specified Id");
+                }
+                return Ok(updatedItem);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // DELETE: api/products/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            try
+            {
+                await _productManager.DeleteProduct(id); // Delete the product
+                return Ok($"Product with Id {id} has been deleted"); // Return success message
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message); // Return error message if product not found
+            }
         }
     }
 }
