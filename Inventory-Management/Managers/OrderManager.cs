@@ -44,5 +44,23 @@ namespace Inventory_Management.Managers
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<Order> UpdateOrderStatusAsync(int id, int newStatus)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
+            {
+                return null;
+            }
+
+            if (newStatus < 0 || newStatus > 2)
+            {
+                throw new ArgumentException("Invalid status value. Must be 0 (Pending), 1 (Completed), or 2 (Cancelled).");
+            }
+
+            order.OrderStatus = (Order.Status)newStatus;
+            await _context.SaveChangesAsync();
+            return order;
+        }
     }
 }

@@ -82,5 +82,29 @@ namespace Inventory_Management.Controllers
                 return BadRequest($"Error creating order: {ex.Message}");
             }
         }
+
+        [HttpPut("{id}/status")]
+        public async Task<ActionResult<Order>> UpdateOrderStatus(int id, [FromBody] UpdateOrderStatusDTO updateDto)
+        {
+            try 
+            {
+                var updatedOrder = await _orderManager.UpdateOrderStatusAsync(id, updateDto.NewStatus);
+                
+                if (updatedOrder == null)
+                {
+                    return NotFound($"Order with ID {id} not found");
+                }
+
+                return Ok(updatedOrder);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while updating the order status: {ex.Message}");
+            }
+        }
     } 
 }
