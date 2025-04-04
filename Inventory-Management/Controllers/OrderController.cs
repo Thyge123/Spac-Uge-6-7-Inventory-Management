@@ -22,22 +22,14 @@ namespace Inventory_Management.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
-            var order = await _context.Orders
-                .Include(o => o.OrderItems)
-                .FirstOrDefaultAsync(o => o.OrderId == id);
+            var order = await _orderManager.GetOrderByIdAsync(id);
 
             if (order == null)
             {
-                return NotFound($"Order with ID {id} not found");
+                return NotFound("Order not found");
             }
 
-            // Remove all order items first
-            _context.OrderItems.RemoveRange(order.OrderItems);
-            
-            // Then remove the order
-            _context.Orders.Remove(order);
-            
-            await _context.SaveChangesAsync();
+            await _orderManager.DeleteOrderAsync(id);
 
             return NoContent();
         }

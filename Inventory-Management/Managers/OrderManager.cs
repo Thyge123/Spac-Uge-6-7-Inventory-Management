@@ -34,5 +34,15 @@ namespace Inventory_Management.Managers
             await _context.SaveChangesAsync();
             return order;
         }
+
+        public async Task DeleteOrderAsync(int id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order != null)
+            {
+                _context.Orders.Remove(order);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }
