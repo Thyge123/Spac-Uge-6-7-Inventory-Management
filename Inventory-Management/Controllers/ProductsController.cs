@@ -3,6 +3,7 @@ using Inventory_Management.Factories;
 using Inventory_Management.Interfaces;
 using Inventory_Management.Managers;
 using Inventory_Management.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory_Management.Controllers
@@ -54,6 +55,7 @@ namespace Inventory_Management.Controllers
         }
 
         // POST: api/products
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductDTO item)
         {
@@ -83,6 +85,7 @@ namespace Inventory_Management.Controllers
         }
 
         // PUT: api/products/{id}
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] UpdateProductDTO item)
         {
@@ -102,6 +105,7 @@ namespace Inventory_Management.Controllers
         }
 
         // DELETE: api/products/{id}
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {

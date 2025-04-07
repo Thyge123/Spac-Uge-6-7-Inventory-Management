@@ -14,13 +14,15 @@ namespace Inventory_Management.Managers
         }
 
         // Add a new user
-        public async Task AddUserAsync(User user)
+        public async Task<User> AddUserAsync(User user)
         {
             try
             {
                 HashPassword(user);
+                user.CreatedAt = DateTime.UtcNow;
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
+                return user;
             }
             catch (Exception e)
             {
@@ -72,6 +74,7 @@ namespace Inventory_Management.Managers
         {
             try
             {
+                user.UpdatedAt = DateTime.UtcNow; // Update the timestamp
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
             }
