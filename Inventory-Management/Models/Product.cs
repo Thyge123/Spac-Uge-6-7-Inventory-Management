@@ -18,6 +18,8 @@ namespace Inventory_Management.Models
 
         public int CategoryId { get; set; }
 
+        public int Quantity { get; set; }
+
         // Navigation properties
         [ForeignKey("CategoryId")]
         public virtual Category Category { get; set; }
