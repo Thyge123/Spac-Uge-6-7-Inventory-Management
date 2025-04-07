@@ -50,6 +50,12 @@ builder.Configuration.AddEnvironmentVariables();
 
 Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
 
+var AllowSpecificOrigins = "AllowFrontendOrigin";
+builder.Services.AddCors(o => o.AddPolicy(AllowSpecificOrigins, builder =>
+{
+    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+}));
+
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -111,6 +117,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors(AllowSpecificOrigins);
 }
 
 app.UseHttpsRedirection();
