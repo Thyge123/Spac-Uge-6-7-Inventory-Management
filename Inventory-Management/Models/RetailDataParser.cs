@@ -24,12 +24,6 @@ namespace Inventory_Management.Models
             return statuses[index];
         }
 
-        public int GenerateRandomQuantity()
-        {
-            Random random = new Random();
-            return random.Next(0, 100); // Random quantity between 1 and 10
-        }
-
         public void ParseAndSaveData(string csvFilePath)
         {
             // Dictionary to track orders by a composite key (customer_id + order_date)
@@ -74,8 +68,7 @@ namespace Inventory_Management.Models
                             ProductName = record.product_name,
                             Price = (decimal)record.price,
                             CategoryId = record.category_id,
-                            Category = categoryTracker[record.category_id],
-                            Quantity = GenerateRandomQuantity()
+                            Category = categoryTracker[record.category_id]
                         };
                         productTracker[record.product_id] = product;
                     }

@@ -17,7 +17,7 @@ namespace Inventory_Management.Context
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<User> Users { get; set; } 
-
+        public DbSet<InventoryTransaction> InventoryTransactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,6 +47,20 @@ namespace Inventory_Management.Context
                 .HasOne(p => p.Category)
                 .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure relationship between InventoryTransaction and Product
+            modelBuilder.Entity<InventoryTransaction>()
+                .HasOne(it => it.Product)
+                .WithMany(p => p.InventoryTransactions)
+                .HasForeignKey(it => it.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure relationship between InventoryTransaction and User
+            modelBuilder.Entity<InventoryTransaction>()
+                .HasOne(it => it.User)
+                .WithMany(u => u.InventoryTransactions)
+                .HasForeignKey(it => it.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
         }   
     }

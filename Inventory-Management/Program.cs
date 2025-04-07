@@ -73,7 +73,6 @@ builder.Services.AddScoped<UserManager>();
 builder.Services.AddScoped<AuthHelpers>();
 builder.Services.AddSingleton<IProductFactory, ProductFactory>();
 
-
 builder.Services.AddScoped<RetailDataParser>();
 
 // Uncomment the following code to parse and save the data from the CSV file into the database
@@ -81,7 +80,6 @@ builder.Services.AddScoped<RetailDataParser>();
 // RetailDataParser retailDataParser = builder.Services.BuildServiceProvider().GetRequiredService<RetailDataParser>();
 
 // retailDataParser.ParseAndSaveData(Path.Combine(Directory.GetCurrentDirectory(), "../data/synthetic_online_retail_data.csv"));
-
 
 // Add these to your Program.cs
 builder.Services.AddAuthentication(options =>
@@ -102,6 +100,8 @@ builder.Services.AddAuthentication(options =>
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT key not configured")))
     };
 });
+
+builder.Services.AddScoped<InventoryTransactionManager>();
 
 var app = builder.Build();
 
