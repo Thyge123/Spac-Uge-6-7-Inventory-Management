@@ -1,12 +1,14 @@
-import { useNavigate } from "react-router";
 import {
     useProducts,
-    // useDeleteProduct,
-    // useCreateProduct,
 } from "../queries/ProductQueries";
-import ProductCard from './ProductCard';
+import {
+    ColumnDef,
+} from "@tanstack/react-table";
+import type { ProductCategory, Product } from '@/types';
+import { DataTable } from '@/components/ui/DataTable';
+import { useNavigate } from 'react-router-dom';
 
-const ProductList: React.FC = () => {
+export const ProductList: React.FC = () => {
     const navigate = useNavigate();
     // const [page, setPage] = useState(1);
     // const ITEMS_PER_PAGE = 10;
@@ -91,9 +93,50 @@ const ProductList: React.FC = () => {
     //     }));
     // };
 
-    const navigateToDetail = (id: number) => {
-        navigate(`/products/${id}`);
-    };
+    const columns: ColumnDef<Product>[] = [
+        {
+            header: "Id",
+            accessorKey: "productId",
+            cell: ({ row }) => {
+                const id: number = row.getValue("productId");
+                return (
+                    <a onClick={() => navigate(`/products/${id}`)}>
+                        {id}
+                    </a>
+                );
+            }
+        },
+        {
+            header: "Name",
+            accessorKey: "productName"
+        },
+        {
+            header: "Price",
+            accessorKey: "price",
+            cell: ({ row }) => {
+                const amount = parseFloat(row.getValue("price"));
+                const formatted = new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                }).format(amount);
+
+                return <div className="text-right font-medium">{formatted}</div>;
+            },
+        },
+        {
+            header: "Category",
+            accessorKey: "category",
+            cell: ({ row }) => {
+                const { categoryId, categoryName }: ProductCategory = row.getValue("category");
+                return (
+                    <a onClick={() => navigate(`/products/categories/${categoryId}`)}>
+                        {categoryId + " | " + categoryName}
+                    </a>
+                );
+            }
+        }
+    ];
+
 
     if (isLoading) {
         return <div className="p-6">Loading products...</div>;
@@ -129,6 +172,30 @@ const ProductList: React.FC = () => {
     }
 
     return (
+        <DataTable columns={columns} data={products} />
+        // <div className="p-6">
+        //     <div className="flex justify-between items-center mb-6">
+        //         <h1 className="text-2xl font-bold">Products</h1>
+        //         {/* <button
+        //             onClick={() => setShowCreateForm(true)}
+        //             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        //         >
+        //             Add New Product
+        //         </button> */}
+        //     </div>
+
+        //     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        //         {products.map((product) => (
+        //             <ProductCard
+        //                 key={product.productId}
+        //                 product={product}
+        //                 // onDelete={handleDelete}
+        //                 onClick={navigateToDetail}
+        //             // isDeleting={deleteProduct.isPending}
+        //             />
+        //         ))}
+        //     </div>
+        // </div>
         // <div className="p-4">
         //     <h1 className="text-2xl font-bold mb-4">Products</h1>
         //     <table className="w-full table-auto border h-max-">
@@ -149,30 +216,5 @@ const ProductList: React.FC = () => {
         //         </tbody>
         //     </table>
         // </div>
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Products</h1>
-                {/* <button
-                    onClick={() => setShowCreateForm(true)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                    Add New Product
-                </button> */}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
-                    <ProductCard
-                        key={product.productId}
-                        product={product}
-                        // onDelete={handleDelete}
-                        onClick={navigateToDetail}
-                    // isDeleting={deleteProduct.isPending}
-                    />
-                ))}
-            </div>
-        </div>
     );
 };
-
-export default ProductList;

@@ -3,23 +3,31 @@ import {
     QueryClientProvider,
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { queryClient } from './api/queryClient';
-import Navbar from './layout/Navbar';
-import Sidebar from './layout/Sidebar';
+import { queryClient } from '@/api/queryClient';
+import Navbar from '@/layout/Navbar';
 import { Toaster } from 'sonner';
-import ProductList from './pages/products/components/ProductsList';
+import { ProductList } from '@/pages/products/components/ProductsList';
+import { ProductCategoriesList } from '@/pages/products.categories/components/ProductCategoriesList';
+import { ProductCategoryDetail } from '@/pages/products.categories/components/ProductCategoryDetail';
+import { ProductDetail } from '@/pages/products/components/ProductsDetail';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/layout/DashboardSidebar';
 
 const RootLayout: React.FC = () => (
-    <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <div className="flex flex-1">
-            <Sidebar />
-            <main className="flex-1 p-8 bg-white min-h-[calc(100vh-64px)]">
-                <Outlet />
-            </main>
+    <SidebarProvider>
+        <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <div className="flex flex-1">
+                {/* <Sidebar /> */}
+                <AppSidebar />
+
+                <main className="flex-1 p-8 bg-white min-h-[calc(100vh-64px)]">
+                    <Outlet />
+                </main>
+            </div>
+            <Toaster position="top-center" />
         </div>
-        <Toaster position="top-center" />
-    </div>
+    </SidebarProvider>
 );
 
 // Data router configuration
@@ -35,6 +43,9 @@ const router = createBrowserRouter([
             },
             // Product routes
             { path: "products", Component: ProductList },
+            { path: "products/:id", Component: ProductDetail },
+            { path: "products/categories", Component: ProductCategoriesList },
+            { path: "products/categories/:id", Component: ProductCategoryDetail }
             // { path: "products/:id", Component: ProductDetail },
             // // Order routes
             // { path: "orders", Component: OrderList },

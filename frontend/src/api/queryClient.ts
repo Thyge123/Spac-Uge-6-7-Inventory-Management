@@ -14,6 +14,10 @@ export const queryKeys = {
     products: {
         all: ["products"] as const,
         byId: (id: string) => ["products", id] as const,
+        categories: {
+            all: ["product-categories"] as const,
+            byId: (id: string) => ["product-categories", id] as const,
+        }
         // byCategory: (category: string) =>
         //     ["products", "category", category] as const,
     }

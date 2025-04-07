@@ -1,6 +1,6 @@
-import axiosClient from "../../../api/axiosClient";
-import { ProductEndpoints } from '../../../api/endpoints';
-import { Product, type ProductQueryParams } from "../../../types";
+import axiosClient from "@/api/axiosClient";
+import { ProductEndpoints } from '@/api/endpoints';
+import { Product, type ProductQueryParams } from "@/types";
 
 /**
  * Service class for handling product-related API calls

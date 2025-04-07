@@ -2,12 +2,17 @@ export type Product = {
     productId: number;
     productName?: string;
     price: number;
-    category: Category;
+    category: ProductCategory;
 };
 
 export type ProductQueryParams = {
     isDescending: boolean;
     sortBy: string;
+};
+
+export type ProductCategory = {
+    categoryId: number;
+    categoryName: string;
 };
 
 export type OrderItemDto = {
@@ -30,11 +35,16 @@ export type OrderItem = {
     quantity: number;
 };
 
-export type Category = {
-    categoryId: number;
-    categoryName: string;
+export type ApiError = {
+    message: string;
+    code: string;
+    status: number;
 };
 
-export type BaseResponse<T> = {
-    data: T[];
+export type SidebarGroupArgs = {
+    label: string;
+    items?: {
+        label: string;
+        url: string;
+    }[];
 };
