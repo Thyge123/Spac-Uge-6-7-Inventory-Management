@@ -5,6 +5,7 @@ using Inventory_Management.Context;
 using Inventory_Management.DTO_S;
 using Inventory_Management.DTOs;
 using Inventory_Management.Managers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Inventory_Management.Controllers
 {
@@ -19,6 +20,7 @@ namespace Inventory_Management.Controllers
             _orderManager = orderManager;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
@@ -83,6 +85,7 @@ namespace Inventory_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}/status")]
         public async Task<ActionResult<Order>> UpdateOrderStatus(int id, [FromBody] UpdateOrderStatusDTO updateDto)
         {

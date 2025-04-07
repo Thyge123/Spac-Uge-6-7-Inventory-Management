@@ -3,6 +3,7 @@ using Inventory_Management.Factories;
 using Inventory_Management.Interfaces;
 using Inventory_Management.Managers;
 using Inventory_Management.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory_Management.Controllers
@@ -18,15 +19,22 @@ namespace Inventory_Management.Controllers
 
         // GET: api/products
         [HttpGet]
-        public async Task<IActionResult> GetAllProducts([FromQuery] string? sortBy, [FromQuery] bool isDescending = false)
+        public async Task<IActionResult> GetAllProducts(
+    [FromQuery] string? sortBy,
+    [FromQuery] bool isDescending = false,
+    [FromQuery] string? categoryName = null,
+    [FromQuery] string? productName = null,
+    [FromQuery] decimal? minPrice = null,
+    [FromQuery] decimal? maxPrice = null)
         {
-            var filterModel = new SortModel
-            {
-                SortBy = sortBy,
-                isDescending = isDescending
-            };
+            var filter = new ProductsFilterModel(
+                categoryName,
+                productName,
+                minPrice,
+                maxPrice,
+                null); // Category object would typically be looked up by name if needed
 
-            var products = await _productManager.GetAllProductsAsync(filterModel);
+            var products = await _productManager.GetAllProductsAsync(sortBy, isDescending, filter);
             if (products == null || !products.Any())
             {
                 return NotFound("No Products found");
@@ -47,6 +55,7 @@ namespace Inventory_Management.Controllers
         }
 
         // POST: api/products
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductDTO item)
         {
@@ -76,6 +85,7 @@ namespace Inventory_Management.Controllers
         }
 
         // PUT: api/products/{id}
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] UpdateProductDTO item)
         {
@@ -95,6 +105,7 @@ namespace Inventory_Management.Controllers
         }
 
         // DELETE: api/products/{id}
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
