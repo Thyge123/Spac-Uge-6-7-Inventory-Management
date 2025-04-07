@@ -19,13 +19,60 @@ namespace Inventory_Management.Managers
         }
 
         // Returns a list of all products with their details and category information 
-        public async Task<List<ProductDTO>> GetAllProductsAsync(SortModel query)
+        public async Task<List<ProductDTO>> GetAllProductsAsync(string? sortBy, bool isDescending, ProductsFilterModel? filter = null)
         {
-            var productsQuery = _context.Products
-                .Include(p => p.Category); // Correctly include category information
+            // Start with the base query including the Category
+            IQueryable<Product> productsQuery = _context.Products
+                .Include(p => p.Category);
 
-            // Convert to DTOs before applying sorting
-            var productDtos = await productsQuery
+            // Apply filters
+            productsQuery = ApplyFilters(productsQuery, filter);
+
+            // Convert to DTOs
+            var productDtos = await ConvertToProductDTOs(productsQuery);
+
+            // Apply sorting
+            productDtos = ApplySorting(productDtos, sortBy, isDescending);
+
+            return productDtos;
+        }
+
+        private IQueryable<Product> ApplyFilters(IQueryable<Product> query, ProductsFilterModel? filter)
+        {
+            if (filter == null)
+                return query;
+
+            if (!string.IsNullOrWhiteSpace(filter.ProductName))
+            {
+                query = query.Where(p => p.ProductName.Contains(filter.ProductName));
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.CategoryName))
+            {
+                query = query.Where(p => p.Category.CategoryName.Contains(filter.CategoryName));
+            }
+
+            if (filter.MinPrice.HasValue)
+            {
+                query = query.Where(p => p.Price >= filter.MinPrice.Value);
+            }
+
+            if (filter.MaxPrice.HasValue)
+            {
+                query = query.Where(p => p.Price <= filter.MaxPrice.Value);
+            }
+
+            if (filter.Category != null)
+            {
+                query = query.Where(p => p.CategoryId == filter.Category.CategoryId);
+            }
+
+            return query;
+        }
+
+        private async Task<List<ProductDTO>> ConvertToProductDTOs(IQueryable<Product> query)
+        {
+            return await query
                 .Select(p => new ProductDTO
                 {
                     ProductId = p.ProductId,
@@ -37,66 +84,40 @@ namespace Inventory_Management.Managers
                         CategoryName = p.Category.CategoryName
                     }
                 })
-                .ToListAsync(); // Asynchronous call to fetch all products
-
-            if (!string.IsNullOrEmpty(query.SortBy))
-            {
-                if (query.SortBy.Equals("ProductName", StringComparison.OrdinalIgnoreCase))
-                {
-                    productDtos = query.isDescending
-                        ? productDtos.OrderByDescending(p => p.ProductName).ToList()
-                        : productDtos.OrderBy(p => p.ProductName).ToList();
-                }
-                else if (query.SortBy.Equals("Price", StringComparison.OrdinalIgnoreCase))
-                {
-                    productDtos = query.isDescending
-                        ? productDtos.OrderByDescending(p => p.Price).ToList()
-                        : productDtos.OrderBy(p => p.Price).ToList();
-                }
-                else if (query.SortBy.Equals("CategoryName", StringComparison.OrdinalIgnoreCase))
-                {
-                    productDtos = query.isDescending
-                        ? productDtos.OrderByDescending(p => p.Category.CategoryName).ToList()
-                        : productDtos.OrderBy(p => p.Category.CategoryName).ToList();
-                }
-                else if (query.SortBy.Equals("ProductId", StringComparison.OrdinalIgnoreCase))
-                {
-                    productDtos = query.isDescending
-                        ? productDtos.OrderByDescending(p => p.ProductId).ToList()
-                        : productDtos.OrderBy(p => p.ProductId).ToList();
-                }
-                else if (query.SortBy.Equals("CategoryId", StringComparison.OrdinalIgnoreCase))
-                {
-                    productDtos = query.isDescending
-                        ? productDtos.OrderByDescending(p => p.Category.CategoryId).ToList()
-                        : productDtos.OrderBy(p => p.Category.CategoryId).ToList();
-                }
-                else
-                {
-                    throw new ArgumentException("Invalid sort parameter");
-                }
-            }
-
-            return productDtos;
+                .ToListAsync();
         }
-        /*
-        // Fetch all products from the database and map them to ProductDTO
-        return await _context.Products
-            .Select(p => new ProductDTO
+
+        private List<ProductDTO> ApplySorting(List<ProductDTO> products, string? sortBy, bool isDescending)
+        {
+            if (string.IsNullOrEmpty(sortBy))
+                return products;
+
+            return sortBy.ToLowerInvariant() switch
             {
-                ProductId = p.ProductId,
-                ProductName = p.ProductName,
-                Price = p.Price,
-                Category = new CategoryDTO
-                {
-                    CategoryId = p.Category.CategoryId,
-                    CategoryName = p.Category.CategoryName
-                }
-            })
-            .ToListAsync(); // Asynchronous call to fetch all products
-        */
+                "productname" => isDescending
+                    ? products.OrderByDescending(p => p.ProductName).ToList()
+                    : products.OrderBy(p => p.ProductName).ToList(),
 
+                "price" => isDescending
+                    ? products.OrderByDescending(p => p.Price).ToList()
+                    : products.OrderBy(p => p.Price).ToList(),
 
+                "categoryname" => isDescending
+                    ? products.OrderByDescending(p => p.Category.CategoryName).ToList()
+                    : products.OrderBy(p => p.Category.CategoryName).ToList(),
+
+                "productid" => isDescending
+                    ? products.OrderByDescending(p => p.ProductId).ToList()
+                    : products.OrderBy(p => p.ProductId).ToList(),
+
+                "categoryid" => isDescending
+                    ? products.OrderByDescending(p => p.Category.CategoryId).ToList()
+                    : products.OrderBy(p => p.Category.CategoryId).ToList(),
+
+                _ => throw new ArgumentException("Invalid sort parameter")
+            };
+        }
+       
         // Returns a single product by its ID with category information
         public async Task<ProductDTO?> GetProductByIdAsync(int id)
         {
