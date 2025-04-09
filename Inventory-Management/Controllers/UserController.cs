@@ -53,7 +53,7 @@ namespace Inventory_Management.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")]
         // POST: api/user
         [HttpPost]
         public async Task<IActionResult> AddUser([FromBody] User user, User.UserRole role)

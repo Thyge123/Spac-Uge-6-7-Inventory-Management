@@ -1,3 +1,7 @@
+export const AuthEndpoints = {
+    login: () => '/login'
+};
+
 export const ProductEndpoints = {
     getAll: (params: string) => `/products${params ? `?${params}` : ""}`,
     getById: (id: string | number) => `/products/${id}`,

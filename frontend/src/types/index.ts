@@ -3,6 +3,7 @@ export type Product = {
     productName?: string;
     price: number;
     category: ProductCategory;
+    quantity: number;
 };
 
 export type ProductQueryParams = {
@@ -47,4 +48,17 @@ export type SidebarGroupArgs = {
         label: string;
         url: string;
     }[];
+};
+
+export type AuthStatus = {
+    success: boolean;
+    err?: {
+        message: string;
+    };
+    token: string;
+};
+
+export type Credentials = {
+    username: string,
+    password: string;
 };

@@ -6,10 +6,57 @@ import {
 } from "@tanstack/react-table";
 import type { ProductCategory, Product } from '@/types';
 import { DataTable } from '@/components/ui/DataTable';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
+const columns: ColumnDef<Product>[] = [
+    {
+        header: "Id",
+        accessorKey: "productId",
+        cell: ({ row }) => {
+            const id: number = row.getValue("productId");
+            return (
+                <Link to={`/products/${id}`}>
+                    {id}
+                </Link>
+            );
+        }
+    },
+    {
+        header: "Name",
+        accessorKey: "productName"
+    },
+    {
+        header: "Price",
+        accessorKey: "price",
+        cell: ({ row }) => {
+            const amount = parseFloat(row.getValue("price"));
+            const formatted = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+            }).format(amount);
+
+            return <div className="font-medium">{formatted}</div>;
+        },
+    },
+    {
+        header: "Category",
+        accessorKey: "category",
+        cell: ({ row }) => {
+            const { categoryId, categoryName }: ProductCategory = row.getValue("category");
+            return (
+                <Link to={`/products/categories/${categoryId}`}>
+                    {categoryId + " | " + categoryName}
+                </Link>
+            );
+        }
+    },
+    {
+        header: "Quantity",
+        accessorKey: "quantity"
+    }
+];
 
 export const ProductList: React.FC = () => {
-    const navigate = useNavigate();
     // const [page, setPage] = useState(1);
     // const ITEMS_PER_PAGE = 10;
     // const [showCreateForm, setShowCreateForm] = useState(false);
@@ -93,49 +140,7 @@ export const ProductList: React.FC = () => {
     //     }));
     // };
 
-    const columns: ColumnDef<Product>[] = [
-        {
-            header: "Id",
-            accessorKey: "productId",
-            cell: ({ row }) => {
-                const id: number = row.getValue("productId");
-                return (
-                    <a onClick={() => navigate(`/products/${id}`)}>
-                        {id}
-                    </a>
-                );
-            }
-        },
-        {
-            header: "Name",
-            accessorKey: "productName"
-        },
-        {
-            header: "Price",
-            accessorKey: "price",
-            cell: ({ row }) => {
-                const amount = parseFloat(row.getValue("price"));
-                const formatted = new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                }).format(amount);
 
-                return <div className="font-medium">{formatted}</div>;
-            },
-        },
-        {
-            header: "Category",
-            accessorKey: "category",
-            cell: ({ row }) => {
-                const { categoryId, categoryName }: ProductCategory = row.getValue("category");
-                return (
-                    <a onClick={() => navigate(`/products/categories/${categoryId}`)}>
-                        {categoryId + " | " + categoryName}
-                    </a>
-                );
-            }
-        }
-    ];
 
 
     if (isLoading) {

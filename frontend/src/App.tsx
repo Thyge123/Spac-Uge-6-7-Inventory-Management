@@ -4,7 +4,6 @@ import {
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { queryClient } from '@/api/queryClient';
-// import Navbar from '@/components/layout/Navbar';sss
 import { Toaster } from 'sonner';
 import { ProductList } from '@/pages/products/components/ProductsList';
 import { ProductCategoriesList } from '@/pages/products.categories/components/ProductCategoriesList';
@@ -13,6 +12,8 @@ import { ProductDetail } from '@/pages/products/components/ProductsDetail';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { DashboardSidebar } from '@/components/layout/DashboardSidebar';
 import { DashboardNavbar } from '@/components/layout/DashboardNavbar';
+import { LoginForm } from '@/pages/auth/components/LoginForm';
+import { authLoader, loginLoader } from '@/pages/auth/utils/loaders';
 
 const RootLayout: React.FC = () => (
     <SidebarProvider>
@@ -41,6 +42,7 @@ const router = createBrowserRouter([
     {
         path: "/",
         Component: RootLayout,
+        loader: authLoader,
         children: [
             // Default redirect to /products
             {
@@ -51,34 +53,19 @@ const router = createBrowserRouter([
             { path: "products", Component: ProductList },
             { path: "products/:id", Component: ProductDetail },
             { path: "products/categories", Component: ProductCategoriesList },
-            { path: "products/categories/:id", Component: ProductCategoryDetail }
-            // { path: "products/:id", Component: ProductDetail },
-            // // Order routes
-            // { path: "orders", Component: OrderList },
-            // { path: "orders/:id", Component: OrderDetail },
-            // // User routes
-            // { path: "users", Component: UserList },
-            // { path: "users/:id", Component: UserDetail },
+            { path: "products/categories/:id", Component: ProductCategoryDetail },
         ],
     },
+    { path: "login", Component: LoginForm, loader: loginLoader }
 ]);
 
 export default function App() {
     return (
         <QueryClientProvider client={queryClient}>
-            {/* React Query Devtools */}
             <RouterProvider router={router} />
             {import.meta.env.VITE_ENABLE_QUERY_DEVTOOLS === "true" && (
                 <ReactQueryDevtools initialIsOpen={false} />
             )}
-            {/* <Router>
-                <nav className="p-4 bg-blue-600 text-white flex gap-4">
-                    <Link to="/products">Products</Link>
-                </nav>
-                <Routes>
-                    <Route path="/products" element={<Products />} />
-                </Routes>
-            </Router> */}
         </QueryClientProvider>
     );
 }
