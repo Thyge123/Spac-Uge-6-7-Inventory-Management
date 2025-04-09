@@ -21,7 +21,12 @@ namespace Inventory_Management.Managers
         }
 
         // Returns a list of all products with their details and category information 
-        public async Task<List<ProductDTO>> GetAllProductsAsync(string? sortBy, bool isDescending, ProductsFilterModel? filter = null)
+        public async Task<(List<ProductDTO> Products, int TotalCount)> GetAllProductsAsync(
+            string? sortBy, 
+            bool isDescending, 
+            ProductsFilterModel? filter = null,
+            int pageNumber = 1,
+            int pageSize = 40)
         {
             // Start with the base query including the Category
             IQueryable<Product> productsQuery = _context.Products
@@ -30,13 +35,19 @@ namespace Inventory_Management.Managers
             // Apply filters
             productsQuery = ApplyFilters(productsQuery, filter);
 
-            // Convert to DTOs
-            var productDtos = await ConvertToProductDTOs(productsQuery);
+            // Get total count before pagination
+            int totalCount = await productsQuery.CountAsync();
 
-            // Apply sorting
+            // Apply pagination before the Select transformation
+            productsQuery = productsQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
+
+            // Convert to DTOs and apply sorting
+            var productDtos = await ConvertToProductDTOs(productsQuery);
             productDtos = ApplySorting(productDtos, sortBy, isDescending);
 
-            return productDtos;
+            return (productDtos, totalCount);
         }
 
         private IQueryable<Product> ApplyFilters(IQueryable<Product> query, ProductsFilterModel? filter)
