@@ -42,8 +42,19 @@ namespace Inventory_Management.Controllers
         [Authorize(Roles = "Admin")] // Staff and admins can view transactions
         public async Task<IActionResult> GetTransactions()
         {
-            var transactions = await _manager.GetTransactionsAsync();
-            return Ok(transactions);
+            try
+            {
+                var transactions = await _manager.GetTransactionsAsync();
+                if (transactions == null || !transactions.Any())
+                {
+                    return NotFound("No transactions found");
+                }
+                return Ok(transactions);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 } 

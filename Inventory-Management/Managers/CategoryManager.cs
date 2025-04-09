@@ -15,8 +15,7 @@ namespace Inventory_Management.Managers
 
         // Returns a list of all categories with their details
         public async Task<(List<CategoryDTO> Categories, int TotalCount)> GetAllCategoriesAsync(int pageNumber = 1, int pageSize = 10)
-        {
-            // Get total count
+        {   // Get total count
             int totalCount = await _context.Categories.CountAsync();
 
             // Fetch paginated categories from the database and map them to CategoryDTO
@@ -36,15 +35,40 @@ namespace Inventory_Management.Managers
         // Returns a single category by its ID
         public async Task<CategoryDTO?> GetCategoryByIdAsync(int id)
         {
-            // Fetch a single category by ID from the database and map it to CategoryDTO
-            return await _context.Categories
-                .Where(c => c.CategoryId == id)
-                .Select(c => new CategoryDTO
+            try
+            {
+                // Check if the category ID is valid
+                if (id <= 0)
                 {
-                    CategoryId = c.CategoryId,
-                    CategoryName = c.CategoryName
-                })
-                .FirstOrDefaultAsync(); // Asynchronous call to fetch a single category
+                    throw new ArgumentException("Category ID must be greater than zero", nameof(id));
+                }
+
+                // Fetch a single category by ID from the database and map it to CategoryDTO
+                var category = await _context.Categories
+                    .Where(c => c.CategoryId == id)
+                    .Select(c => new CategoryDTO
+                    {
+                        CategoryId = c.CategoryId,
+                        CategoryName = c.CategoryName
+                    })
+                    .FirstOrDefaultAsync(); // Asynchronous call to fetch a single category
+
+                if (category == null)
+                {
+                    // Return null instead of throwing an exception to indicate "not found"
+                    return null;
+                }
+
+                return category;
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new InvalidOperationException($"Database error while retrieving category with ID {id}", ex);
+            }
+            catch (Exception ex) when (ex is not ArgumentException)
+            {
+                throw new InvalidOperationException($"An error occurred while retrieving category with ID {id}: {ex.Message}", ex);
+            }
         }
     }
 }
