@@ -46,12 +46,20 @@ namespace Inventory_Management.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(int id)
         {
-            var product = await _productManager.GetProductByIdAsync(id);
-            if (product == null)
+            try
             {
-                return NotFound("No product found with specified Id");
+                // Get the product by ID
+                var product = await _productManager.GetProductByIdAsync(id);
+                if (product == null)
+                {
+                    return NotFound("No product found with specified Id");
+                }
+                return Ok(product);
             }
-            return Ok(product);
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // POST: api/products

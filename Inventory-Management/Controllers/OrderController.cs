@@ -24,38 +24,57 @@ namespace Inventory_Management.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
-            var orders = await _orderManager.GetAllOrdersAsync();
-
-            if (orders == null || !orders.Any())
+            try
             {
-                return NotFound("No orders found");
+                var orders = await _orderManager.GetAllOrdersAsync();
+                if (orders == null || !orders.Any())
+                {
+                    return NotFound("No orders found");
+                }
+                return Ok(orders);
             }
-
-            return Ok(orders);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(int id)
         {
-           var order = await _orderManager.GetOrderByIdAsync(id);
-            if (order == null)
+            try
             {
-                return NotFound("Order not found");
+                var order = await _orderManager.GetOrderByIdAsync(id);
+                if (order == null)
+                {
+                    return NotFound("Order not found");
+                }
+                return Ok(order);
             }
-            return Ok(order);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [Authorize(Roles = "Admin, Vendor")]
         [HttpGet("customer/{customerId}")]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByCustomerId(int customerId)
         {
-            var orders = await _orderManager.GetOrdersByCustomerIdAsync(customerId);
-            if (orders == null || !orders.Any())
+            try
             {
-                return NotFound("No orders found for this customer");
+                var customer = await _orderManager.GetOrdersByCustomerIdAsync(customerId);
+                if (customer == null)
+                {
+                    return NotFound("Customer not found");
+                }
+                return Ok(customer);
             }
-            return Ok(orders);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [Authorize(Roles = "Admin, Vendor")]
@@ -113,16 +132,19 @@ namespace Inventory_Management.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
-            var order = await _orderManager.GetOrderByIdAsync(id);
-
-            if (order == null)
+            try
             {
-                return NotFound("Order not found");
+                var order = await _orderManager.GetOrderByIdAsync(id);
+                if (order == null)
+                {
+                    return NotFound("Order not found");
+                }
+                return Ok(order);
             }
-
-            await _orderManager.DeleteOrderAsync(id);
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     } 
 }
