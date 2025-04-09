@@ -71,7 +71,6 @@ namespace Inventory_Management.Managers
             try
             {
                 var users = await _context.Users
-                    .Include(u => u.InventoryTransactions)
                     .ToListAsync();
 
                 // Remove sensitive data
@@ -99,7 +98,6 @@ namespace Inventory_Management.Managers
                 }
 
                 var user = await _context.Users
-                    .Include(u => u.InventoryTransactions)
                     .FirstOrDefaultAsync(u => u.Id == id);
 
                 if (user == null)
@@ -213,21 +211,20 @@ namespace Inventory_Management.Managers
                 }
 
                 var user = await _context.Users
-                    .Include(u => u.InventoryTransactions)
                     .FirstOrDefaultAsync(u => u.Id == id);
 
                 if (user == null)
                 {
                     throw new InvalidOperationException($"User with ID {id} not found");
                 }
-
+                /*
                 // Check if user has related inventory transactions
                 if (user.InventoryTransactions != null && user.InventoryTransactions.Count > 0)
                 {
                     throw new InvalidOperationException(
                         $"Cannot delete user with ID {id} because they have {user.InventoryTransactions.Count} related inventory transactions");
                 }
-
+                */
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
             }

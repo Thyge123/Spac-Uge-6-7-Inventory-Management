@@ -12,8 +12,10 @@ namespace Inventory_Management.Model
         [StringLength(100)]
         public string City { get; set; }
 
-        // Navigation property
+        // Navigation properties
         [JsonIgnore]
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+
+        public virtual ICollection<InventoryTransaction> InventoryTransactions { get; set; } = new List<InventoryTransaction>();
     }
 }

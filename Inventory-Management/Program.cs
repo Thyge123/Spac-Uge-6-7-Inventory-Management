@@ -59,7 +59,10 @@ builder.Services.AddCors(o => o.AddPolicy(AllowSpecificOrigins, builder =>
 // Add services to the container.
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+    //options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+
     options.JsonSerializerOptions.MaxDepth = 32;
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -81,6 +84,8 @@ builder.Services.AddScoped<ProductManager>();
 builder.Services.AddScoped<CategoryManager>();
 builder.Services.AddScoped<UserManager>();
 builder.Services.AddScoped<AuthHelpers>();
+builder.Services.AddScoped<InventoryTransactionManager>();
+builder.Services.AddScoped<CustomerManager>();
 builder.Services.AddSingleton<IProductFactory, ProductFactory>();
 builder.Services.AddScoped<IProductStockObserver, LowStockAlertObserver>();
 
@@ -113,10 +118,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddScoped<InventoryTransactionManager>();
-
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

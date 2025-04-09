@@ -58,9 +58,9 @@ namespace Inventory_Management.Context
 
             // Configure relationship between InventoryTransaction and User
             modelBuilder.Entity<InventoryTransaction>()
-                .HasOne(it => it.User)
+                .HasOne(it => it.Customer)
                 .WithMany(u => u.InventoryTransactions)
-                .HasForeignKey(it => it.UserId)
+                .HasForeignKey(it => it.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
         }   
     }
