@@ -13,26 +13,45 @@ namespace Inventory_Management.Controllers
         }
         // GET: api/categories
         [HttpGet]
-        public async Task<IActionResult> GetAllCategories()
+        public async Task<IActionResult> GetAllCategories([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 40)
         {
-            var categories = await _categoryManager.GetAllCategoriesAsync(); // Fetch all categories
-            if (categories == null || !categories.Any()) // Check if the list is empty or null
+            var (categories, totalCount) = await _categoryManager.GetAllCategoriesAsync(pageNumber, pageSize);
+            
+            if (categories == null || !categories.Any())
             {
-                return NotFound("No Categories found"); // Return NotFound if no categories are found
+                return NotFound("No Categories found");
             }
-            return Ok(categories); // Return the list of categories
+
+            return Ok(new
+            {
+                Categories = categories,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            });
         }
         // GET: api/categories/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategoryById(int id)
         {
-            var category = await _categoryManager.GetCategoryByIdAsync(id); // Fetch a single category by ID
-            if (category == null)
+            try
             {
-                return NotFound("No category found with specified Id"); // Return NotFound if the category is not found
+                if (id <= 0) // Check if the ID is valid
+                {
+                    return BadRequest("Invalid category ID"); // Return BadRequest if the ID is invalid
+                }
+                var category = await _categoryManager.GetCategoryByIdAsync(id); // Fetch a single category by ID
+                if (category == null)
+                {
+                    return NotFound("No category found with specified Id"); // Return NotFound if the category is not found
+                }
+                return Ok(category); // Return the category details
             }
-            return Ok(category); // Return the category details
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message); // Return 500 Internal Server Error
+            }  
         }
-
     }
 }

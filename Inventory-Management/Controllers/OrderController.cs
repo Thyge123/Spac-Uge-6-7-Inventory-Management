@@ -21,45 +21,65 @@ namespace Inventory_Management.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrder(int id)
-        {
-            var order = await _orderManager.GetOrderByIdAsync(id);
-
-            if (order == null)
-            {
-                return NotFound("Order not found");
-            }
-
-            await _orderManager.DeleteOrderAsync(id);
-
-            return NoContent();
-        }
-
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrders([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 40)
         {
-            var orders = await _orderManager.GetAllOrdersAsync();
+            var (orders, totalCount) = await _orderManager.GetAllOrdersAsync(pageNumber, pageSize);
 
             if (orders == null || !orders.Any())
             {
-                return NotFound("No orders found");
+                return BadRequest("No orders found");
             }
 
-            return Ok(orders);
+            return Ok(new
+            {
+                Orders = orders,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(int id)
         {
-           var order = await _orderManager.GetOrderByIdAsync(id);
-            if (order == null)
+            try
             {
-                return NotFound("Order not found");
+                var order = await _orderManager.GetOrderByIdAsync(id);
+                if (order == null)
+                {
+                    return NotFound("Order not found");
+                }
+                return Ok(order);
             }
-            return Ok(order);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
+        [Authorize(Roles = "Admin, Vendor")]
+        [HttpGet("customer/{customerId}")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByCustomerId(int customerId)
+        {
+            try
+            {
+                var customer = await _orderManager.GetOrdersByCustomerIdAsync(customerId);
+                if (customer == null)
+                {
+                    return NotFound("Customer not found");
+                }
+                return Ok(customer);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [Authorize(Roles = "Admin, Vendor")]
         [HttpPost]
         public async Task<ActionResult<Order>> CreateOrder([FromBody] OrderCreateDto orderDto)
         {
@@ -107,6 +127,25 @@ namespace Inventory_Management.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"An error occurred while updating the order status: {ex.Message}");
+            }
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteOrder(int id)
+        {
+            try
+            {
+                var order = await _orderManager.GetOrderByIdAsync(id);
+                if (order == null)
+                {
+                    return NotFound("Order not found");
+                }
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     } 

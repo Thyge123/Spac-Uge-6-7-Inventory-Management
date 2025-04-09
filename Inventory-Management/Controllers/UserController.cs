@@ -1,5 +1,6 @@
 ﻿using Inventory_Management.Managers;
 using Inventory_Management.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory_Management.Controllers
@@ -15,6 +16,7 @@ namespace Inventory_Management.Controllers
             _userManager = userManager;
         }
 
+        [Authorize(Roles = "Admin")]
         // GET: api/user
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
@@ -30,6 +32,7 @@ namespace Inventory_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         // GET: api/user/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
@@ -49,9 +52,11 @@ namespace Inventory_Management.Controllers
             }
         }
 
+
+        [Authorize(Roles = "Admin")]
         // POST: api/user
         [HttpPost]
-        public async Task<IActionResult> AddUser([FromBody] User user)
+        public async Task<IActionResult> AddUser([FromBody] User user, User.UserRole role)
         {
             if (user == null)
             {
@@ -59,7 +64,7 @@ namespace Inventory_Management.Controllers
             }
             try
             {
-                await _userManager.AddUserAsync(user);
+                await _userManager.AddUserAsync(user, role);
                 return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
             }
             catch (Exception e)
@@ -92,6 +97,7 @@ namespace Inventory_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         // DELETE: api/user/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)

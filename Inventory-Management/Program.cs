@@ -57,7 +57,11 @@ builder.Services.AddCors(o => o.AddPolicy(AllowSpecificOrigins, builder =>
 }));
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+    options.JsonSerializerOptions.MaxDepth = 32;
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -78,14 +82,16 @@ builder.Services.AddScoped<CategoryManager>();
 builder.Services.AddScoped<UserManager>();
 builder.Services.AddScoped<AuthHelpers>();
 builder.Services.AddSingleton<IProductFactory, ProductFactory>();
+builder.Services.AddScoped<IProductStockObserver, LowStockAlertObserver>();
 
 builder.Services.AddScoped<RetailDataParser>();
 
 // Uncomment the following code to parse and save the data from the CSV file into the database
 
-// RetailDataParser retailDataParser = builder.Services.BuildServiceProvider().GetRequiredService<RetailDataParser>();
+//RetailDataParser retailDataParser = builder.Services.BuildServiceProvider().GetRequiredService<RetailDataParser>();
 
-// retailDataParser.ParseAndSaveData(Path.Combine(Directory.GetCurrentDirectory(), "../data/synthetic_online_retail_data.csv"));
+//retailDataParser.ParseAndSaveData(Path.Combine(Directory.GetCurrentDirectory(), "../data/synthetic_online_retail_data.csv"));
+
 
 // Add these to your Program.cs
 builder.Services.AddAuthentication(options =>

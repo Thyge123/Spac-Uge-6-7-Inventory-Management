@@ -2,7 +2,7 @@
 
 namespace Inventory_Management.Interfaces
 {
-    public interface IProductItem
+    public interface IProduct
     {
         int ProductId { get; set; }
         int CategoryId { get; set; }
