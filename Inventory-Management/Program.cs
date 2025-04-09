@@ -57,7 +57,11 @@ builder.Services.AddCors(o => o.AddPolicy(AllowSpecificOrigins, builder =>
 }));
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+    options.JsonSerializerOptions.MaxDepth = 32;
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -87,6 +91,7 @@ builder.Services.AddScoped<RetailDataParser>();
 //RetailDataParser retailDataParser = builder.Services.BuildServiceProvider().GetRequiredService<RetailDataParser>();
 
 //retailDataParser.ParseAndSaveData(Path.Combine(Directory.GetCurrentDirectory(), "../data/synthetic_online_retail_data.csv"));
+
 
 // Add these to your Program.cs
 builder.Services.AddAuthentication(options =>
