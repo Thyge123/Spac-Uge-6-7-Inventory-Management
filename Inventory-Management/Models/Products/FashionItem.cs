@@ -2,7 +2,7 @@
 
 namespace Inventory_Management.Models.Products
 {
-    public class FashionItem : IProductItem
+    public class FashionItem : IProduct
     {
         public int ProductId { get; set; }
         public int CategoryId { get; set; }

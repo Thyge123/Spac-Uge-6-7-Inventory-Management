@@ -15,21 +15,46 @@ namespace Inventory_Management.Managers
 
         // Returns a list of all categories with their details
         public async Task<(List<CategoryDTO> Categories, int TotalCount)> GetAllCategoriesAsync(int pageNumber = 1, int pageSize = 10)
-        {   // Get total count
-            int totalCount = await _context.Categories.CountAsync();
-
-            // Fetch paginated categories from the database and map them to CategoryDTO
-            var categories = await _context.Categories
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .Select(c => new CategoryDTO
+        {
+            try
+            {
+                // Validate page number and size
+                if (pageNumber <= 0)
                 {
-                    CategoryId = c.CategoryId,
-                    CategoryName = c.CategoryName
-                })
-                .ToListAsync();
+                    throw new ArgumentException("Page number must be greater than zero", nameof(pageNumber));
+                }
+                if (pageSize <= 0)
+                {
+                    throw new ArgumentException("Page size must be greater than zero", nameof(pageSize));
+                }
+                // Get total count
+                int totalCount = await _context.Categories.CountAsync();
 
-            return (categories, totalCount);
+                // Fetch paginated categories from the database and map them to CategoryDTO
+                var categories = await _context.Categories
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .Select(c => new CategoryDTO
+                    {
+                        CategoryId = c.CategoryId,
+                        CategoryName = c.CategoryName
+                    })
+                    .ToListAsync();
+
+                return (categories, totalCount);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new InvalidOperationException($"Invalid pagination parameters: {ex.Message}", ex);
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new InvalidOperationException("Database error while retrieving categories", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"An error occurred while retrieving categories: {ex.Message}", ex);
+            }
         }
 
         // Returns a single category by its ID

@@ -28,7 +28,7 @@ namespace Inventory_Management.Controllers
 
             if (orders == null || !orders.Any())
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return BadRequest("No orders found");
             }
 
             return Ok(new

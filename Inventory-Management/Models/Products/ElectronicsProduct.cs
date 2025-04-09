@@ -3,7 +3,7 @@ using Inventory_Management.Interfaces;
 
 namespace Inventory_Management.Models.Products
 {
-    public class ElectronicsProduct : IProductItem
+    public class ElectronicsProduct : IProduct
     {
         public int ProductId { get; set; }
         public string ProductName { get; set; }

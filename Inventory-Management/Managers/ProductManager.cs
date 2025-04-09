@@ -51,6 +51,15 @@ namespace Inventory_Management.Managers
 
             return (productDtos, totalCount);
         }
+            catch (DbUpdateException ex)
+            {
+                throw new InvalidOperationException($"Database error while retrieving products: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Error retrieving products: {ex.Message}", ex);
+            }           
+        }
 
         private IQueryable<Product> ApplyFilters(IQueryable<Product> query, ProductsFilterModel? filter)
         {
@@ -193,7 +202,7 @@ namespace Inventory_Management.Managers
         }
 
         // Creates a new inventory item and saves it to the database
-        public async Task<IProductItem> CreateProduct(int productId, int categoryId,
+        public async Task<IProduct> CreateProduct(int productId, int categoryId,
                                                  string productName, decimal price)
         {
             try
@@ -235,7 +244,7 @@ namespace Inventory_Management.Managers
                 if (existingProduct != null)
                 {
                     // If the product already exists, return the existing product
-                    return (IProductItem)existingProduct;
+                    return (IProduct)existingProduct;
                 }
 
                 // Add entity to database

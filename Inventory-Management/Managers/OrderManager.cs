@@ -22,18 +22,41 @@ namespace Inventory_Management.Managers
       
         public async Task<(List<Order> Orders, int TotalCount)> GetAllOrdersAsync(int pageNumber = 1, int pageSize = 40)
         {
-            // Get total count
-            int totalCount = await _context.Orders.CountAsync();
+            try
+            {
+                if (pageNumber <= 0)
+                {
+                    throw new ArgumentException("Page number must be greater than zero", nameof(pageNumber));
+                }
+                if (pageSize <= 0)
+                {
+                    throw new ArgumentException("Page size must be greater than zero", nameof(pageSize));
+                }
+                // Get total count
+                int totalCount = await _context.Orders.CountAsync();
 
-            // Fetch paginated orders from the database
-            var orders = await _context.Orders
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Product)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+                // Fetch paginated orders from the database
+                var orders = await _context.Orders
+                    .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
 
-            return (orders, totalCount);
+                return (orders, totalCount);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new InvalidOperationException($"Invalid pagination parameters: {ex.Message}", ex);
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new InvalidOperationException($"Database error while retrieving orders: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Error retrieving orders: {ex.Message}", ex);
+            }
         }
 
         public async Task<Order> GetOrderByIdAsync(int id)

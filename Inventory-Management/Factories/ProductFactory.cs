@@ -10,7 +10,7 @@ namespace Inventory_Management.Factories
     {
 
         // This method creates a product item based on the category ID
-        public IProductItem CreateProductItem(int productId, int categoryId,
+        public IProduct CreateProductItem(int productId, int categoryId,
                                                  string productName, decimal price)
         {
             switch (categoryId) // Category ID is used to determine the type of product

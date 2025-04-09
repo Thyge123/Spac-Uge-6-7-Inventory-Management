@@ -5,7 +5,7 @@ namespace Inventory_Management.Interfaces
 {
     public interface IProductFactory
     {
-        IProductItem CreateProductItem(int productId, int categoryId,
+        IProduct CreateProductItem(int productId, int categoryId,
                                         string productName, decimal price);
     }
 }
