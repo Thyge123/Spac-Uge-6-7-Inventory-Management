@@ -78,6 +78,7 @@ builder.Services.AddScoped<CategoryManager>();
 builder.Services.AddScoped<UserManager>();
 builder.Services.AddScoped<AuthHelpers>();
 builder.Services.AddSingleton<IProductFactory, ProductFactory>();
+builder.Services.AddScoped<IProductStockObserver, LowStockAlertObserver>();
 
 builder.Services.AddScoped<RetailDataParser>();
 
