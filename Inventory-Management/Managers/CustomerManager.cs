@@ -98,9 +98,7 @@ namespace Inventory_Management.Managers
                 {
                     throw new InvalidOperationException($"Customer with ID {customerId} not found");
                 }
-                existingCustomer.Name = updatedCustomer.Name;
-                existingCustomer.Email = updatedCustomer.Email;
-                // Update other properties as needed
+                existingCustomer.City = updatedCustomer.City;
                 _context.Customers.Update(existingCustomer);
                 await _context.SaveChangesAsync();
                 return existingCustomer;
