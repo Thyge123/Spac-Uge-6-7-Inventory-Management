@@ -14,12 +14,14 @@ namespace Inventory_Management.Managers
         }
 
         // Add a new user
-        public async Task<User> AddUserAsync(User user)
+        public async Task<User> AddUserAsync(User user, User.UserRole role)
         {
             try
             {
                 HashPassword(user);
+                user.Role = role;
                 user.CreatedAt = DateTime.UtcNow;
+                user.UpdatedAt = DateTime.UtcNow;
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
                 return user;

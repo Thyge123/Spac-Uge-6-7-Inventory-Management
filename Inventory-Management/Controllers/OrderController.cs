@@ -21,21 +21,6 @@ namespace Inventory_Management.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrder(int id)
-        {
-            var order = await _orderManager.GetOrderByIdAsync(id);
-
-            if (order == null)
-            {
-                return NotFound("Order not found");
-            }
-
-            await _orderManager.DeleteOrderAsync(id);
-
-            return NoContent();
-        }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
@@ -49,6 +34,7 @@ namespace Inventory_Management.Controllers
             return Ok(orders);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(int id)
         {
@@ -60,6 +46,19 @@ namespace Inventory_Management.Controllers
             return Ok(order);
         }
 
+        [Authorize(Roles = "Admin, Vendor")]
+        [HttpGet("customer/{customerId}")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByCustomerId(int customerId)
+        {
+            var orders = await _orderManager.GetOrdersByCustomerIdAsync(customerId);
+            if (orders == null || !orders.Any())
+            {
+                return NotFound("No orders found for this customer");
+            }
+            return Ok(orders);
+        }
+
+        [Authorize(Roles = "Admin, Vendor")]
         [HttpPost]
         public async Task<ActionResult<Order>> CreateOrder([FromBody] OrderCreateDto orderDto)
         {
@@ -108,6 +107,22 @@ namespace Inventory_Management.Controllers
             {
                 return StatusCode(500, $"An error occurred while updating the order status: {ex.Message}");
             }
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteOrder(int id)
+        {
+            var order = await _orderManager.GetOrderByIdAsync(id);
+
+            if (order == null)
+            {
+                return NotFound("Order not found");
+            }
+
+            await _orderManager.DeleteOrderAsync(id);
+
+            return NoContent();
         }
     } 
 }

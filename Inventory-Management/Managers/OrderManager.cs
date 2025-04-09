@@ -30,6 +30,16 @@ namespace Inventory_Management.Managers
                 .FirstOrDefaultAsync(o => o.OrderId == id);
         }
 
+        // Get orders by customer ID, for only the logged-in customer and admin
+        public async Task<List<Order>> GetOrdersByCustomerIdAsync(int customerId)
+        {
+            return await _context.Orders
+                .Include(o => o.OrderItems)
+                .Where(o => o.CustomerId == customerId)
+                .ToListAsync();
+        }
+
+
         public async Task<Order> CreateOrderAsync(Order order)
         {
             _context.Add(order);

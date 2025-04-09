@@ -26,7 +26,7 @@ namespace Inventory_Management.Helpers
                 var claims = new List<Claim> { // Create claims
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.Username),
-                    new Claim(ClaimTypes.Role, user.Role)
+                    new Claim(ClaimTypes.Role, user.Role.ToString())
                 };
                 // Create JWT token
                 var jwtToken = new JwtSecurityToken(
