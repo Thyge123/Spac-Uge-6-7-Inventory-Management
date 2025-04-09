@@ -7,6 +7,6 @@
         public decimal Price { get; set; }
         public CategoryDTO Category { get; set; }
 
-
+        public int Quantity { get; set; }
     }
 }

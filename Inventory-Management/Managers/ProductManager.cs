@@ -11,11 +11,13 @@ namespace Inventory_Management.Managers
     {
         private readonly InventoryDbContext _context;
         private readonly IProductFactory _productFactory;
+        private readonly IProductStockObserver _productStockObserver;
 
-        public ProductManager(InventoryDbContext context, IProductFactory productFactory)
+        public ProductManager(InventoryDbContext context, IProductFactory productFactory, IProductStockObserver productStockObserver)
         {
             _context = context;
             _productFactory = productFactory;
+            _productStockObserver = productStockObserver;
         }
 
         // Returns a list of all products with their details and category information 
@@ -82,7 +84,8 @@ namespace Inventory_Management.Managers
                     {
                         CategoryId = p.Category.CategoryId,
                         CategoryName = p.Category.CategoryName
-                    }
+                    },
+                    Quantity = p.Quantity
                 })
                 .ToListAsync();
         }
@@ -107,6 +110,10 @@ namespace Inventory_Management.Managers
                     : products.OrderBy(p => p.Category.CategoryName).ToList(),
 
                 "productid" => isDescending
+                    ? products.OrderByDescending(p => p.ProductId).ToList()
+                    : products.OrderBy(p => p.ProductId).ToList(),
+
+                "id" => isDescending
                     ? products.OrderByDescending(p => p.ProductId).ToList()
                     : products.OrderBy(p => p.ProductId).ToList(),
 
@@ -211,6 +218,19 @@ namespace Inventory_Management.Managers
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
             return; // Deletion successful
+        }
+
+        public async Task UpdateProductQuantity(int productId, int newQuantity)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+            {
+                throw new InvalidOperationException("Product not found");
+            }
+
+            product.AttachObserver(_productStockObserver);
+            product.Quantity = newQuantity;
+            await _context.SaveChangesAsync();
         }
     }
 }
