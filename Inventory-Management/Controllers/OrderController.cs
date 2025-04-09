@@ -22,21 +22,23 @@ namespace Inventory_Management.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrders([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 40)
         {
-            try
-            {
-                var orders = await _orderManager.GetAllOrdersAsync();
-                if (orders == null || !orders.Any())
-                {
-                    return NotFound("No orders found");
-                }
-                return Ok(orders);
-            }
-            catch (Exception ex)
+            var (orders, totalCount) = await _orderManager.GetAllOrdersAsync(pageNumber, pageSize);
+
+            if (orders == null || !orders.Any())
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+
+            return Ok(new
+            {
+                Orders = orders,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            });
         }
 
         [Authorize(Roles = "Admin")]

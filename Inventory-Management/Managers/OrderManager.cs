@@ -19,21 +19,21 @@ namespace Inventory_Management.Managers
             _context = context;
             _productManager = productManager;
         }
-
-        public async Task<List<Order>> GetAllOrdersAsync()
+      
+        public async Task<(List<Order> Orders, int TotalCount)> GetAllOrdersAsync(int pageNumber = 1, int pageSize = 40)
         {
-            try
-            {
-                return await _context.Orders
-                    .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Product)
-                    .Include(o => o.Customer)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Error retrieving orders: {ex.Message}", ex);
-            }
+            // Get total count
+            int totalCount = await _context.Orders.CountAsync();
+
+            // Fetch paginated orders from the database
+            var orders = await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (orders, totalCount);
         }
 
         public async Task<Order> GetOrderByIdAsync(int id)
