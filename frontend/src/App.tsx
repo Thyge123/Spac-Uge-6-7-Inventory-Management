@@ -4,23 +4,29 @@ import {
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { queryClient } from '@/api/queryClient';
-import Navbar from '@/layout/Navbar';
+// import Navbar from '@/components/layout/Navbar';sss
 import { Toaster } from 'sonner';
 import { ProductList } from '@/pages/products/components/ProductsList';
 import { ProductCategoriesList } from '@/pages/products.categories/components/ProductCategoriesList';
 import { ProductCategoryDetail } from '@/pages/products.categories/components/ProductCategoryDetail';
 import { ProductDetail } from '@/pages/products/components/ProductsDetail';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/layout/DashboardSidebar';
+import { DashboardSidebar } from '@/components/layout/DashboardSidebar';
+import { DashboardNavbar } from '@/components/layout/DashboardNavbar';
 
 const RootLayout: React.FC = () => (
     <SidebarProvider>
-        <div className="min-h-screen flex flex-col">
-            <Navbar />
+        <div className="min-h-screen min-w-screen flex flex-col">
+            <header className="sticky top-0 z-50 w-full h-[72px] border-b bg-sidebar px-4 backdrop-blur supports-[backdrop-filter]:bg-sidebar/60">
+                <div className="container flex h-full items-center">
+                    <p className='text-lg px-4'>
+                        Admin Dashboard
+                    </p>
+                    <DashboardNavbar />
+                </div>
+            </header>
             <div className="flex flex-1">
-                {/* <Sidebar /> */}
-                <AppSidebar />
-
+                <DashboardSidebar />
                 <main className="flex-1 p-8 bg-white min-h-[calc(100vh-64px)]">
                     <Outlet />
                 </main>
