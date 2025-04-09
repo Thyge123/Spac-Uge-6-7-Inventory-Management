@@ -14,16 +14,23 @@ namespace Inventory_Management.Managers
         }
 
         // Returns a list of all categories with their details
-        public async Task<List<CategoryDTO>> GetAllCategoriesAsync()
+        public async Task<(List<CategoryDTO> Categories, int TotalCount)> GetAllCategoriesAsync(int pageNumber = 1, int pageSize = 10)
         {
-            // Fetch all categories from the database and map them to CategoryDTO
-            return await _context.Categories
+            // Get total count
+            int totalCount = await _context.Categories.CountAsync();
+
+            // Fetch paginated categories from the database and map them to CategoryDTO
+            var categories = await _context.Categories
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .Select(c => new CategoryDTO
                 {
                     CategoryId = c.CategoryId,
                     CategoryName = c.CategoryName
                 })
-                .ToListAsync(); // Asynchronous call to fetch all categories
+                .ToListAsync();
+
+            return (categories, totalCount);
         }
 
         // Returns a single category by its ID
