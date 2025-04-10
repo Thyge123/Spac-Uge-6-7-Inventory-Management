@@ -1,4 +1,4 @@
-import { DataTable } from '@/components/ui/DataTable';
+import { DataTable } from '@/components/ui/data-table';
 import type { ApiError } from '@/types';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
@@ -8,9 +8,10 @@ type Props = {
     dataName: string,
     query: (id: string) => UseQueryResult<any, ApiError>;
     columns: ColumnDef<any>[];
+    tableTitle: string;
 };
 
-export const DetailView: React.FC<Props> = ({ dataName, query, columns }) => {
+export const DetailView: React.FC<Props> = ({ dataName, query, columns, tableTitle }) => {
     const { id } = useParams<{ id: string; }>();
     const { data, isLoading, error } = query(id!);
 
@@ -23,6 +24,6 @@ export const DetailView: React.FC<Props> = ({ dataName, query, columns }) => {
     }
 
     return (
-        <DataTable columns={columns} data={[data!]} />
+        <DataTable columns={columns} data={[data!]} tableTitle={tableTitle} />
     );
 };

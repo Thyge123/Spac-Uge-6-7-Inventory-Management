@@ -1,4 +1,4 @@
-import { DetailView } from '@/components/ui/DetailView';
+import { DetailView } from '@/components/ui/detail-view';
 import { useProduct } from '@/pages/products/queries/ProductQueries';
 import type { Product, ProductCategory } from '@/types';
 import type { ColumnDef } from '@tanstack/react-table';
@@ -42,6 +42,6 @@ const columns: ColumnDef<Product>[] = [
 
 export const ProductDetail: React.FC = () => {
     return (
-        <DetailView dataName="product" query={useProduct} columns={columns} />
+        <DetailView dataName="product" query={useProduct} columns={columns} tableTitle='Product Detail' />
     );
 };

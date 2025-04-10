@@ -1,6 +1,7 @@
 import axiosClient from "@/api/axiosClient";
 import { ProductEndpoints } from '@/api/endpoints';
-import { Product, type ProductQueryParams } from "@/types";
+import { convertToURLSearchParams } from '@/lib/utils';
+import { Product, type AllProductsResponse, type PaginationParams, type ProductQueryParams } from "@/types";
 
 /**
  * Service class for handling product-related API calls
@@ -12,18 +13,14 @@ export default class ProductService {
      * @returns Promise with all product data
      */
     static async getAll(
-        params?: ProductQueryParams
-    ): Promise<Product[]> {
-        const queryParams = params
-            ? new URLSearchParams({
-                isDescending: params.isDescending.toString(),
-                sortBy: params.sortBy.toString(),
-            }).toString()
-            : "";
+        params?: ProductQueryParams & PaginationParams
+    ): Promise<AllProductsResponse> {
 
+        const queryParams = params ? convertToURLSearchParams(params) : "";
         const response = await axiosClient.get(
             ProductEndpoints.getAll(queryParams)
         );
+
         return response.data;
     }
 
