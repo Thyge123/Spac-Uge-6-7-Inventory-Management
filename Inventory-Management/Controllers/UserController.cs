@@ -52,8 +52,6 @@ namespace Inventory_Management.Controllers
             }
         }
 
-
-        [Authorize(Roles = "Admin")]
         // POST: api/user
         [HttpPost]
         public async Task<IActionResult> AddUser([FromBody] User user, User.UserRole role)
@@ -77,9 +75,9 @@ namespace Inventory_Management.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
         {
-            if (user == null || user.Id != id)
+            if (user == null)
             {
-                return BadRequest("User object is null or ID mismatch.");
+                return BadRequest("User object is null");
             }
             try
             {
@@ -88,8 +86,8 @@ namespace Inventory_Management.Controllers
                 {
                     return NotFound($"User with ID {id} not found.");
                 }
-                await _userManager.UpdateUserAsync(user);
-                return NoContent();
+                await _userManager.UpdateUserAsync(id, user);
+                return Ok(user); // Return the updated user
             }
             catch (Exception e)
             {
@@ -105,7 +103,7 @@ namespace Inventory_Management.Controllers
             try
             {
                 await _userManager.DeleteUserAsync(id); // Delete the user
-                return NoContent();
+                return Ok("User deleted succesfully");
             }
             catch (Exception e)
             {
