@@ -93,9 +93,9 @@ builder.Services.AddScoped<RetailDataParser>();
 
 // Uncomment the following code to parse and save the data from the CSV file into the database
 
-//RetailDataParser retailDataParser = builder.Services.BuildServiceProvider().GetRequiredService<RetailDataParser>();
+// RetailDataParser retailDataParser = builder.Services.BuildServiceProvider().GetRequiredService<RetailDataParser>();
 
-//retailDataParser.ParseAndSaveData(Path.Combine(Directory.GetCurrentDirectory(), "../data/synthetic_online_retail_data.csv"));
+// retailDataParser.ParseAndSaveData(Path.Combine(Directory.GetCurrentDirectory(), "../data/synthetic_online_retail_data.csv"));
 
 
 // Add these to your Program.cs

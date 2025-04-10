@@ -11,16 +11,17 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import type { SidebarGroupArgs } from '@/types';
+import type React from 'react';
 import { Link } from 'react-router-dom';
 
-export function AppSidebar() {
+export const DashboardSidebar: React.FC = () => {
 
     const groups: SidebarGroupArgs[] = [
         {
             label: "Products",
             items: [
                 {
-                    label: "All products",
+                    label: "Products",
                     url: "/products"
                 },
                 {
@@ -39,8 +40,8 @@ export function AppSidebar() {
 
     return (
         <Sidebar>
-            <SidebarHeader>Dashboard</SidebarHeader>
-            <SidebarContent>
+            <SidebarHeader className='px-4 pt-4'>Contents:</SidebarHeader>
+            <SidebarContent className='pl-4'>
                 {groups.map(({ label, items }) => (
                     <SidebarGroup key={`sidebarGroup-${label}`}>
                         <SidebarGroupLabel>
@@ -53,7 +54,7 @@ export function AppSidebar() {
                                         <SidebarMenuItem key={label + item.label}>
                                             <SidebarMenuButton asChild>
                                                 <Link to={item.url}>
-                                                    {item.label}
+                                                    - {item.label}
                                                 </Link>
                                             </SidebarMenuButton>
                                         </SidebarMenuItem>
@@ -67,4 +68,4 @@ export function AppSidebar() {
             <SidebarFooter />
         </Sidebar >
     );
-}
+};

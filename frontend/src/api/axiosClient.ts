@@ -25,6 +25,7 @@ export const request = async (options: AxiosRequestConfig) => {
     return client(options).then(onSuccess).catch(onError);
 };
 
+
 // client.interceptors.request.use(
 //     (config: InternalAxiosRequestConfig) => {
 //         // const accessToken = localStorage.getItem(STORAGE_TOKEN.ACCESS_TOKEN);

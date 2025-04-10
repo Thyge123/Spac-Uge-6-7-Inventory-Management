@@ -2,28 +2,29 @@ import { DataTable } from '@/components/ui/DataTable';
 import { useProductCategories } from '@/pages/products.categories/queries/ProductCategoryQueries';
 import type { ProductCategory } from '@/types';
 import type { ColumnDef } from '@tanstack/react-table';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
+const columns: ColumnDef<ProductCategory>[] = [
+    {
+        header: "Id",
+        accessorKey: "categoryId",
+        cell: ({ row }) => {
+            const id: ProductCategory["categoryId"] = row.getValue("categoryId");
+            return (
+                <Link to={`/products/categories/${id}`}>
+                    {id}
+                </Link>
+            );
+        }
+    },
+    {
+        header: "Name",
+        accessorKey: "categoryName"
+    }
+];
 
 export const ProductCategoriesList: React.FC = () => {
     const { data: categories, isLoading, error } = useProductCategories();
-    const navigate = useNavigate();
-
-    const columns: ColumnDef<ProductCategory>[] = [
-        {
-            header: "Id",
-            accessorKey: "categoryId",
-            cell: ({ row }) => {
-                const id: ProductCategory["categoryId"] = row.getValue("categoryId");
-                return (
-                    <a onClick={() => navigate(`/products/categories/${id}`)}>{id}</a>
-                );
-            }
-        },
-        {
-            header: "Name",
-            accessorKey: "categoryName"
-        }
-    ];
 
     if (isLoading) {
         return <div className="p-6">Loading products...</div>;

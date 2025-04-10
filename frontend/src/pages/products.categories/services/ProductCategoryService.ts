@@ -10,8 +10,7 @@ export default class ProductCategoryService {
      * Fetch all product categories with optional sorting and ordering
      * @returns Promise with all product category data
      */
-    static async getAll(
-    ): Promise<ProductCategory[]> {
+    static async getAll(): Promise<ProductCategory[]> {
         const response = await axiosClient.get(
             ProductCategoryEndpoints.getAll()
         );
