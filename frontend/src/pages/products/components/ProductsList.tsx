@@ -3,6 +3,7 @@ import {
 } from "../queries/ProductQueries";
 import {
     ColumnDef,
+    type ColumnFiltersState,
     type PaginationState,
     type SortingState,
 } from "@tanstack/react-table";
@@ -107,141 +108,48 @@ const columns: ColumnDef<Product>[] = [
     }
 ];
 
-const ITEMS_PER_PAGE = 40;
+const DEFAULT_PAGE_SIZE = 40;
 
 export const ProductList: React.FC = () => {
-    const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: ITEMS_PER_PAGE });
+    const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: DEFAULT_PAGE_SIZE });
     const [sorting, setSorting] = useState<SortingState>([]);
-    // const ITEMS_PER_PAGE = 10;
-    // const [showCreateForm, setShowCreateForm] = useState(false);
-    // const [newProduct, setNewProduct] = useState<
-    //     Omit<Product, "id" | "createdAt" | "updatedAt">
-    // >({
-    //     name: "",
-    //     description: "",
-    //     price: 0,
-    //     stock: 0,
-    //     category: "",
-    // });
+    const [filters, setFilters] = useState<ColumnFiltersState>([]);
 
     const { data, isLoading, error } = useProducts({
+        sortBy: sorting.length ? convertToSortBy(sorting[0].id) : "productId",
+        isDescending: sorting.length ? sorting[0].desc : false,
+        productName: filters.find((filter) => filter.id === "productName")?.value as string,
+        categoryName: filters.find((filter) => filter.id === "category")?.value as string,
+        minPrice: filters.find((filter) => filter.id === "minPrice")?.value as number,
+        maxPrice: filters.find((filter) => filter.id === "maxPrice")?.value as number,
         pageNumber: pagination.pageIndex + 1,
         pageSize: pagination.pageSize,
-        sortBy: sorting.length ? convertToSortBy(sorting[0].id) : "productId",
-        isDescending: sorting.length ? sorting[0].desc : false
     });
 
+    // if (isLoading) {
+    //     return <div className="p-6">Loading products...</div>;
+    // }
 
+    // if (error) {
+    //     return <div className="p-6 text-red-500">Error: {error.message}</div>;
+    // }
 
-    // const deleteProduct = useDeleteProduct();
-    // const createProduct = useCreateProduct();
-    // const queryClient = useQueryClient();
-
-    // const handleDelete = async (id: string, e: React.MouseEvent) => {
-    //     e.stopPropagation(); // Prevent navigation when clicking delete
-    //     // Get the current query data
-    //     const previousData = queryClient.getQueryData([
-    //         ...queryKeys.products.all,
-    //         { page, limit: ITEMS_PER_PAGE },
-    //     ]);
-    //     try {
-    //         // Optimistically update the UI by filtering out the deleted product
-    //         queryClient.setQueryData(
-    //             [...queryKeys.products.all, { page, limit: ITEMS_PER_PAGE }],
-    //             (old: any) => {
-    //                 return {
-    //                     ...old,
-    //                     data: old.data.filter((product: Product) => product.id !== id),
-    //                 };
-    //             }
-    //         );
-
-    //         // Perform the actual deletion
-    //         await deleteProduct.mutateAsync(id);
-
-    //         // If the page is now empty and it's not the first page, go to previous page
-    //         if (data?.data.length === 1 && page > 1) {
-    //             setPage(page - 1);
-    //         }
-    //     } catch (error) {
-    //         console.error("Failed to delete product:", error);
-    //         // If there was an error, restore the previous data
-    //         queryClient.setQueryData(
-    //             [...queryKeys.products.all, { page, limit: ITEMS_PER_PAGE }],
-    //             previousData
-    //         );
-    //     }
-    // };
-
-    // const handleCreate = async (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //     try {
-    //         await createProduct.mutateAsync(newProduct);
-    //         // Reset form and hide it after successful creation
-    //         setNewProduct({
-    //             name: "",
-    //             description: "",
-    //             price: 0,
-    //             stock: 0,
-    //             category: "",
-    //         });
-    //         setShowCreateForm(false);
-    //     } catch (error) {
-    //         console.error("Failed to create product:", error);
-    //     }
-    // };
-
-    // const handleInputChange = (
-    //     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    // ) => {
-    //     const { name, value } = e.target;
-    //     setNewProduct((prev) => ({
-    //         ...prev,
-    //         [name]: name === "price" || name === "stock" ? Number(value) : value,
-    //     }));
-    // };
-
-
-    if (isLoading) {
-        return <div className="p-6">Loading products...</div>;
-    }
-
-    if (error) {
-        return <div className="p-6 text-red-500">Error: {error.message}</div>;
-    }
-
-    if (!data?.products?.length) {
-        return (
-            <div className="p-6">
-                <p className="mb-4">No products found</p>
-                {/* <button
-                    onClick={() => setShowCreateForm(true)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                    Add New Product
-                </button>
-                {showCreateForm && (
-                    <ProductForm
-                        product={newProduct}
-                        onSubmit={handleCreate}
-                        onChange={handleInputChange}
-                        onCancel={() => setShowCreateForm(false)}
-                        isSubmitting={createProduct.isPending}
-                        title="Add New Product"
-                        submitLabel="Create Product"
-                    />
-                )} */}
-            </div>
-        );
-    }
+    // if (!data?.products?.length) {
+    //     return (
+    //         <div className="p-6">
+    //             <p className="mb-4">No products found</p>
+    //         </div>
+    //     );
+    // }
 
     return (
         <DataTable
             columns={columns}
-            data={data.products}
+            data={data?.products || []}
             tableTitle='Products'
-            pagination={pagination} setPagination={setPagination} pageCount={data.totalPages}
+            pagination={pagination} setPagination={setPagination} pageCount={data?.totalPages}
             sorting={sorting} setSorting={setSorting}
+            filters={filters} setFilters={setFilters}
         />
     );
 };
