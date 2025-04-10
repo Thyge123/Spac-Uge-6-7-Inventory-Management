@@ -37,7 +37,7 @@ namespace Inventory_Management.Controllers
                 null);
 
             var (products, totalCount) = await _productManager.GetAllProductsAsync(sortBy, isDescending, filter, pageNumber, pageSize);
-            
+
             if (products == null || !products.Any())
             {
                 return NotFound("No Products found");
@@ -86,7 +86,8 @@ namespace Inventory_Management.Controllers
                     item.ProductId,
                     item.CategoryId,
                     item.ProductName,
-                    item.Price
+                    item.Price,
+                    item.Quantity
                 );
 
                 // Check if the item was created successfully, if not return a bad request
@@ -110,7 +111,7 @@ namespace Inventory_Management.Controllers
         {
             try
             {
-                var updatedItem = await _productManager.UpdateProduct(id, item.ProductName, item.Price, item.CategoryId);
+                var updatedItem = await _productManager.UpdateProduct(id, item.ProductName, item.Price, item.CategoryId, item.Quantity);
                 if (updatedItem == null)
                 {
                     return NotFound("No product found with specified Id");

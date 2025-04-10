@@ -11,7 +11,7 @@ namespace Inventory_Management.Factories
 
         // This method creates a product item based on the category ID
         public IProduct CreateProductItem(int productId, int categoryId,
-                                                 string productName, decimal price)
+                                                 string productName, decimal price, int quantity)
         {
             switch (categoryId) // Category ID is used to determine the type of product
             {
@@ -22,6 +22,7 @@ namespace Inventory_Management.Factories
                         CategoryId = categoryId,
                         ProductName = productName,
                         Price = price,
+                        Quantity = quantity,
                     };
 
                 case 20:
@@ -31,6 +32,7 @@ namespace Inventory_Management.Factories
                         CategoryId = categoryId,
                         ProductName = productName,
                         Price = price,
+                        Quantity = quantity,
                     };
 
                 case 30:
@@ -40,6 +42,7 @@ namespace Inventory_Management.Factories
                         CategoryId = categoryId,
                         ProductName = productName,
                         Price = price,
+                        Quantity = quantity,
                     };
 
                 case 40:
@@ -49,6 +52,7 @@ namespace Inventory_Management.Factories
                         CategoryId = categoryId,
                         ProductName = productName,
                         Price = price,
+                        Quantity = quantity,
 
                     };
 
@@ -59,6 +63,7 @@ namespace Inventory_Management.Factories
                         CategoryId = categoryId,
                         ProductName = productName,
                         Price = price,
+                        Quantity = quantity,
                     };
 
                 default:

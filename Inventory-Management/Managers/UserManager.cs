@@ -142,7 +142,7 @@ namespace Inventory_Management.Managers
         }
 
         // Update a user
-        public async Task UpdateUserAsync(User user)
+        public async Task UpdateUserAsync(int id, User user)
         {
             try
             {
@@ -151,13 +151,13 @@ namespace Inventory_Management.Managers
                     throw new ArgumentNullException(nameof(user), "User cannot be null");
                 }
 
-                if (user.Id <= 0)
+                if (id <= 0)
                 {
                     throw new ArgumentException("User ID must be greater than zero", nameof(user.Id));
                 }
 
                 // Verify user exists
-                var existingUser = await _context.Users.FindAsync(user.Id);
+                var existingUser = await _context.Users.FindAsync(id);
                 if (existingUser == null)
                 {
                     throw new InvalidOperationException($"User with ID {user.Id} not found");
@@ -173,19 +173,9 @@ namespace Inventory_Management.Managers
                     }
                 }
 
-                // If password is provided in plain text, hash it
-                if (!string.IsNullOrEmpty(user.Password) && !user.Password.StartsWith("$2"))
-                {
-                    HashPassword(user);
-                }
-                else
-                {
-                    // Keep existing password if no new password provided
-                    user.Password = existingUser.Password;
-                }
-
+                existingUser.Password = user.Password; // Update password if provided
                 user.UpdatedAt = DateTime.UtcNow;
-                _context.Entry(existingUser).CurrentValues.SetValues(user);
+                _context.Users.Update(user); // Update the user entity
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
