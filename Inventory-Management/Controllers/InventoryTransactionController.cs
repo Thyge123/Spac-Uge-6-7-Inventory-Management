@@ -24,8 +24,8 @@ namespace Inventory_Management.Controllers
         {
             try
             {
-                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-                var transaction = await _manager.CreateTransactionAsync(dto, userId);
+                var customerId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+                var transaction = await _manager.CreateTransactionAsync(dto, customerId);
                 return Ok(transaction);
             }
             catch (ArgumentException ex)

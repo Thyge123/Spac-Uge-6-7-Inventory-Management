@@ -14,7 +14,7 @@ namespace Inventory_Management.Managers
             _context = context;
         }
 
-        public async Task<InventoryTransaction> CreateTransactionAsync(CreateInventoryTransactionDTO dto, int userId)
+        public async Task<InventoryTransaction> CreateTransactionAsync(CreateInventoryTransactionDTO dto, int customerId)
         {
             try
             {
@@ -28,9 +28,9 @@ namespace Inventory_Management.Managers
                     throw new ArgumentException("Product ID must be greater than zero", nameof(dto.ProductId));
                 }
 
-                if (userId <= 0)
+                if (customerId <= 0)
                 {
-                    throw new ArgumentException("User ID must be greater than zero", nameof(userId));
+                    throw new ArgumentException("Customer ID must be greater than zero", nameof(customerId));
                 }
 
                 if (string.IsNullOrWhiteSpace(dto.TransactionType))
@@ -50,11 +50,11 @@ namespace Inventory_Management.Managers
                     throw new InvalidOperationException($"Product with ID {dto.ProductId} not found");
                 }
 
-                // Find user with tracking enabled
-                var user = await _context.Users.FindAsync(userId);
-                if (user == null)
+                // Find customer with tracking enabled
+                var customer = await _context.Customers.FindAsync(customerId);
+                if (customer == null)
                 {
-                    throw new InvalidOperationException($"User with ID {userId} not found");
+                    throw new InvalidOperationException($"Customer with ID {customerId} not found");
                 }
 
                 // For sales, check if we have enough stock
@@ -68,8 +68,8 @@ namespace Inventory_Management.Managers
                 {
                     ProductId = dto.ProductId,
                     Product = product,
-                    UserId = userId,
-                    User = user,
+                    CustomerId = customerId,
+                    Customer = customer,
                     TransactionType = dto.TransactionType.ToUpperInvariant(), // Standardize to uppercase
                     Quantity = dto.Quantity,
                     TransactionDate = DateTime.UtcNow
@@ -109,13 +109,13 @@ namespace Inventory_Management.Managers
             string? transactionType = null,
             DateTime? startDate = null,
             DateTime? endDate = null,
-            int? userId = null)
+            int? customerId = null)
         {
             try
             {
                 IQueryable<InventoryTransaction> query = _context.InventoryTransactions
                     .Include(t => t.Product)
-                    .Include(t => t.User);
+                    .Include(t => t.Customer);
 
                 // Apply filters
                 if (!string.IsNullOrWhiteSpace(productName))
@@ -138,9 +138,9 @@ namespace Inventory_Management.Managers
                     query = query.Where(t => t.TransactionDate <= endDate.Value.AddDays(1).AddSeconds(-1));
                 }
 
-                if (userId.HasValue && userId.Value > 0)
+                if (customerId.HasValue && customerId.Value > 0)
                 {
-                    query = query.Where(t => t.UserId == userId.Value);
+                    query = query.Where(t => t.CustomerId == customerId.Value);
                 }
 
                 return await query.OrderByDescending(t => t.TransactionDate).ToListAsync();
@@ -162,7 +162,7 @@ namespace Inventory_Management.Managers
 
                 var transaction = await _context.InventoryTransactions
                     .Include(t => t.Product)
-                    .Include(t => t.User)
+                    .Include(t => t.Customer)
                     .FirstOrDefaultAsync(t => t.TransactionId == id);
 
                 if (transaction == null)
@@ -195,7 +195,7 @@ namespace Inventory_Management.Managers
                 }
 
                 return await _context.InventoryTransactions
-                    .Include(t => t.User)
+                    .Include(t => t.Customer)
                     .Where(t => t.ProductId == productId)
                     .OrderByDescending(t => t.TransactionDate)
                     .ToListAsync();
@@ -206,31 +206,31 @@ namespace Inventory_Management.Managers
             }
         }
 
-        public async Task<IEnumerable<InventoryTransaction>> GetTransactionsByUserIdAsync(int userId)
+        public async Task<IEnumerable<InventoryTransaction>> GetTransactionsByCustomerIdAsync(int customerId)
         {
             try
             {
-                if (userId <= 0)
+                if (customerId <= 0)
                 {
-                    throw new ArgumentException("User ID must be greater than zero", nameof(userId));
+                    throw new ArgumentException("Customer ID must be greater than zero", nameof(customerId));
                 }
 
-                // Check if user exists
-                bool userExists = await _context.Users.AnyAsync(u => u.Id == userId);
-                if (!userExists)
+                // Check if customer exists
+                bool customerExists = await _context.Customers.AnyAsync(u => u.CustomerId == customerId);
+                if (!customerExists)
                 {
-                    throw new InvalidOperationException($"User with ID {userId} not found");
+                    throw new InvalidOperationException($"Customer with ID {customerId} not found");
                 }
 
                 return await _context.InventoryTransactions
                     .Include(t => t.Product)
-                    .Where(t => t.UserId == userId)
+                    .Where(t => t.CustomerId == customerId)
                     .OrderByDescending(t => t.TransactionDate)
                     .ToListAsync();
             }
             catch (Exception ex) when (ex is not ArgumentException && ex is not InvalidOperationException)
             {
-                throw new InvalidOperationException($"Error retrieving transactions for user ID {userId}: {ex.Message}", ex);
+                throw new InvalidOperationException($"Error retrieving transactions for customer ID {customerId}: {ex.Message}", ex);
             }
         }
     }

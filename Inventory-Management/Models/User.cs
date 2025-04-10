@@ -21,7 +21,6 @@ namespace Inventory_Management.Models
         public DateTime CreatedAt { get; set; } // Date and time when the user was created
         public DateTime UpdatedAt { get; set; } // Date and time when the user was last updated
 
-        // Navigation properties
-        public virtual ICollection<InventoryTransaction> InventoryTransactions { get; set; } = new List<InventoryTransaction>();
+      
     }
 }
