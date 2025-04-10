@@ -4,6 +4,7 @@ import {
 import {
     ColumnDef,
     type PaginationState,
+    type SortingState,
 } from "@tanstack/react-table";
 import type { ProductCategory, Product } from '@/types';
 import { DataTable } from '@/components/ui/data-table';
@@ -11,6 +12,7 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowUpDown } from 'lucide-react';
+import { convertToSortBy } from '@/pages/products/utils/ordering';
 
 const columns: ColumnDef<Product>[] = [
     {
@@ -19,7 +21,7 @@ const columns: ColumnDef<Product>[] = [
             return (
                 <Button
                     variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    onClick={() => column.toggleSorting(column.getIsSorted() ? column.getIsSorted() === "asc" : true)}>
                     Id
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
@@ -89,11 +91,6 @@ const columns: ColumnDef<Product>[] = [
                 </Link>
             );
         },
-        sortingFn: (rowA, rowB, _columnId) => {
-            const idA = rowA.original.category.categoryId;
-            const idB = rowB.original.category.categoryId;
-            return idA - idB;
-        }
     },
     {
         accessorKey: "quantity",
@@ -114,7 +111,7 @@ const ITEMS_PER_PAGE = 40;
 
 export const ProductList: React.FC = () => {
     const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: ITEMS_PER_PAGE });
-
+    const [sorting, setSorting] = useState<SortingState>([]);
     // const ITEMS_PER_PAGE = 10;
     // const [showCreateForm, setShowCreateForm] = useState(false);
     // const [newProduct, setNewProduct] = useState<
@@ -130,6 +127,8 @@ export const ProductList: React.FC = () => {
     const { data, isLoading, error } = useProducts({
         pageNumber: pagination.pageIndex + 1,
         pageSize: pagination.pageSize,
+        sortBy: sorting.length ? convertToSortBy(sorting[0].id) : "productId",
+        isDescending: sorting.length ? sorting[0].desc : false
     });
 
 
@@ -242,6 +241,7 @@ export const ProductList: React.FC = () => {
             data={data.products}
             tableTitle='Products'
             pagination={pagination} setPagination={setPagination} pageCount={data.totalPages}
+            sorting={sorting} setSorting={setSorting}
         />
     );
 };

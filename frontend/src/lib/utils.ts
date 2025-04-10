@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 export function convertToURLSearchParams(params: Record<string, any>) {
     return new URLSearchParams(
         Object.entries(params)
-            .filter(([, v]) => v !== undefined && v !== null)
-            .map(([k, v]) => [k, String(v)])
+            .filter(([, value]) => value !== undefined && value !== null)
+            .map(([key, value]) => [key, String(value)])
     ).toString();
 }

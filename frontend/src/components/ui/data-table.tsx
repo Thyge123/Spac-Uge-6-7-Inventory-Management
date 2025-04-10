@@ -30,6 +30,8 @@ type DataTableProps<TData, TValue> = {
     pagination?: PaginationState;
     setPagination?: Dispatch<SetStateAction<PaginationState>>;
     pageCount?: number;
+    sorting?: SortingState;
+    setSorting?: Dispatch<SetStateAction<SortingState>>;
 };
 
 export function DataTable<TData, TValue>({
@@ -39,9 +41,9 @@ export function DataTable<TData, TValue>({
     pagination,
     setPagination,
     pageCount,
+    sorting,
+    setSorting
 }: DataTableProps<TData, TValue>) {
-
-    const [sorting, setSorting] = useState<SortingState>([]);
 
     const table = useReactTable({
         data,
@@ -58,8 +60,6 @@ export function DataTable<TData, TValue>({
         },
         pageCount: pageCount,
     });
-
-    console.log(sorting[0]);
 
     return (
         <div className="container mx-auto py-10">
