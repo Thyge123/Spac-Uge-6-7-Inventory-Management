@@ -1,4 +1,4 @@
-import { DetailView } from '@/components/ui/DetailView';
+import { DetailView } from '@/components/ui/detail-view';
 import { useProductCategory } from '@/pages/products.categories/queries/ProductCategoryQueries';
 import type { ProductCategory } from '@/types';
 import type { ColumnDef } from '@tanstack/react-table';

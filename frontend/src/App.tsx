@@ -19,7 +19,7 @@ import { LogoutPage } from '@/pages/auth/components/LogoutPage';
 const RootLayout: React.FC = () => (
     <SidebarProvider>
         <div className="min-h-screen min-w-screen flex flex-col">
-            <header className="sticky top-0 z-50 w-full h-[72px] border-b bg-sidebar px-4 backdrop-blur supports-[backdrop-filter]:bg-sidebar/60">
+            <header className="sticky top-0 z-50 w-full h-[72px] border-b bg-sidebar backdrop-blur supports-[backdrop-filter]:bg-sidebar/60">
                 <div className="container flex h-full items-center">
                     <p className='text-lg px-4'>
                         Admin Dashboard

@@ -1,3 +1,15 @@
+export type PaginationParams = {
+    pageNumber: number,
+    pageSize: number;
+};
+
+export type PaginatedResponseResponse = {
+    totalCount: number,
+    pageNumber: number,
+    pageSize: number,
+    totalPages: number,
+};
+
 export type Product = {
     productId: number;
     productName?: string;
@@ -7,9 +19,18 @@ export type Product = {
 };
 
 export type ProductQueryParams = {
-    isDescending: boolean;
-    sortBy: string;
+    sortBy?: string;
+    isDescending?: boolean;
+    categoryName?: string;
+    minPrice?: number,
+    maxPrice?: number,
+    pageNumber: number,
+    pageSize: number;
 };
+
+export type AllProductsResponse = {
+    products: Product[];
+} & PaginatedResponseResponse;
 
 export type ProductCategory = {
     categoryId: number;

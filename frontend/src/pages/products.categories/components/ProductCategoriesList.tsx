@@ -1,4 +1,4 @@
-import { DataTable } from '@/components/ui/DataTable';
+import { DataTable } from '@/components/ui/data-table';
 import { useProductCategories } from '@/pages/products.categories/queries/ProductCategoryQueries';
 import type { ProductCategory } from '@/types';
 import type { ColumnDef } from '@tanstack/react-table';

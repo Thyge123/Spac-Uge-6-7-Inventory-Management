@@ -1,4 +1,4 @@
-import { DataTable } from '@/components/ui/DataTable';
+import { DataTable } from '@/components/ui/data-table';
 import type { ApiError } from '@/types';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
