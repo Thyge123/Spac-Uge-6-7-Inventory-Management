@@ -42,6 +42,6 @@ const columns: ColumnDef<Product>[] = [
 
 export const ProductDetail: React.FC = () => {
     return (
-        <DetailView dataName="product" query={useProduct} columns={columns} />
+        <DetailView dataName="product" query={useProduct} columns={columns} tableTitle='Product Detail' />
     );
 };

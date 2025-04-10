@@ -2,6 +2,7 @@ import {
     ColumnDef,
     flexRender,
     getCoreRowModel,
+    getPaginationRowModel,
     useReactTable,
     type PaginationState,
 } from "@tanstack/react-table";
@@ -23,6 +24,7 @@ import { SelectValue } from '@radix-ui/react-select';
 type DataTableProps<TData, TValue> = {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    tableTitle: string;
     pagination?: PaginationState;
     setPagination?: Dispatch<SetStateAction<PaginationState>>;
     pageCount?: number;
@@ -31,6 +33,7 @@ type DataTableProps<TData, TValue> = {
 export function DataTable<TData, TValue>({
     columns,
     data,
+    tableTitle,
     pagination,
     setPagination,
     pageCount,
@@ -41,6 +44,7 @@ export function DataTable<TData, TValue>({
         columns,
         debugTable: true,
         getCoreRowModel: getCoreRowModel(),
+        manualPagination: true,
         onPaginationChange: setPagination,
         state: {
             pagination
@@ -50,12 +54,12 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className="container mx-auto py-10">
-            <div className='flex items-center'>
-                <h2>
-
+            <div className='flex items-center py-2'>
+                <h2 className='text-4xl'>
+                    {tableTitle}
                 </h2>
                 {pagination ?
-                    <Pagination className='flex items-center justify-end py-2'>
+                    <Pagination className='flex items-center justify-end'>
                         <PaginationContent>
                             <PaginationItem>
                                 <Button
@@ -78,6 +82,15 @@ export function DataTable<TData, TValue>({
                                 </Button>
                             </PaginationItem>
                             <PaginationItem>
+                                <span className="flex items-center gap-1 mx-2">
+                                    <div>Page</div>
+                                    <strong>
+                                        {table.getState().pagination.pageIndex + 1} of{' '}
+                                        {table.getPageCount().toLocaleString()}
+                                    </strong>
+                                </span>
+                            </PaginationItem>
+                            <PaginationItem>
                                 <Button
                                     variant="outline"
                                     size="sm"
@@ -97,15 +110,7 @@ export function DataTable<TData, TValue>({
                                     {'>>'}
                                 </Button>
                             </PaginationItem>
-                            <PaginationItem>
-                                <span className="flex items-center gap-1 mx-2">
-                                    <div>Page</div>
-                                    <strong>
-                                        {table.getState().pagination.pageIndex + 1} of{' '}
-                                        {table.getPageCount().toLocaleString()}
-                                    </strong>
-                                </span>
-                            </PaginationItem>
+
                             <PaginationItem>
                                 <Select
                                     value={String(table.getState().pagination.pageSize)}
@@ -125,18 +130,22 @@ export function DataTable<TData, TValue>({
                             </PaginationItem>
                             <PaginationItem>
                                 <Select
-                                    value={String(table.getState().pagination.pageIndex + 1)}
+                                    value={String(table.getState().pagination.pageIndex)}
                                     onValueChange={value => {
-                                        table.setPageSize(Number(value));
+                                        table.setPageIndex(Number(value));
                                     }}
                                 >
                                     <SelectTrigger>
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {(Array.from({ length: table.getPageCount() }, (_, i) => i + 1)).map((pageCount) => {
+                                        {(Array.from({ length: table.getPageCount() }, (_, i) => i)).map((pageNum) => {
                                             return (
-                                                <SelectItem key={`pageSelect-${pageCount}`} value={String(pageCount)}>Go to page: {pageCount}</SelectItem>
+                                                <SelectItem
+                                                    key={`pageSelect-${pageNum}`}
+                                                    value={String(pageNum)}
+                                                >
+                                                    Go to page: {pageNum + 1}</SelectItem>
                                             );
                                         })}
                                     </SelectContent>

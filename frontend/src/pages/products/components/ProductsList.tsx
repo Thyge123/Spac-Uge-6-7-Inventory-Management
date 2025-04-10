@@ -185,6 +185,11 @@ export const ProductList: React.FC = () => {
     }
 
     return (
-        <DataTable columns={columns} data={data.products} pagination={pagination} setPagination={setPagination} pageCount={data.totalPages} />
+        <DataTable
+            columns={columns}
+            data={data.products}
+            tableTitle='Products'
+            pagination={pagination} setPagination={setPagination} pageCount={data.totalPages}
+        />
     );
 };
