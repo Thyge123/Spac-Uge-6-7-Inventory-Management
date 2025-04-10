@@ -21,6 +21,7 @@ export type Product = {
 export type ProductQueryParams = {
     sortBy?: string;
     isDescending?: boolean;
+    productName?: string;
     categoryName?: string;
     minPrice?: number,
     maxPrice?: number,
