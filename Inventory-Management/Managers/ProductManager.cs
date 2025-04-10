@@ -22,8 +22,8 @@ namespace Inventory_Management.Managers
 
         // Returns a list of all products with their details and category information 
         public async Task<(List<ProductDTO> Products, int TotalCount)> GetAllProductsAsync(
-            string? sortBy, 
-            bool isDescending, 
+            string? sortBy,
+            bool isDescending,
             ProductsFilterModel? filter = null,
             int pageNumber = 1,
             int pageSize = 40)
@@ -37,20 +37,20 @@ namespace Inventory_Management.Managers
                 // Apply filters
                 productsQuery = ApplyFilters(productsQuery, filter);
 
-            // Get total count before pagination
-            int totalCount = await productsQuery.CountAsync();
+                // Get total count before pagination
+                int totalCount = await productsQuery.CountAsync();
 
-            // Apply pagination before the Select transformation
-            productsQuery = productsQuery
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
+                // Apply pagination before the Select transformation
+                productsQuery = productsQuery
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize);
 
-            // Convert to DTOs and apply sorting
-            var productDtos = await ConvertToProductDTOs(productsQuery);
-            productDtos = ApplySorting(productDtos, sortBy, isDescending);
+                // Convert to DTOs and apply sorting
+                var productDtos = await ConvertToProductDTOs(productsQuery);
+                productDtos = ApplySorting(productDtos, sortBy, isDescending);
 
-            return (productDtos, totalCount);
-        }
+                return (productDtos, totalCount);
+            }
             catch (DbUpdateException ex)
             {
                 throw new InvalidOperationException($"Database error while retrieving products: {ex.Message}", ex);
@@ -58,7 +58,7 @@ namespace Inventory_Management.Managers
             catch (Exception ex)
             {
                 throw new InvalidOperationException($"Error retrieving products: {ex.Message}", ex);
-            }           
+            }
         }
 
         private IQueryable<Product> ApplyFilters(IQueryable<Product> query, ProductsFilterModel? filter)
@@ -203,7 +203,7 @@ namespace Inventory_Management.Managers
 
         // Creates a new inventory item and saves it to the database
         public async Task<IProduct> CreateProduct(int productId, int categoryId,
-                                                 string productName, decimal price)
+                                                 string productName, decimal price, int quantity)
         {
             try
             {
@@ -224,8 +224,16 @@ namespace Inventory_Management.Managers
                     throw new ArgumentException($"Category with ID {categoryId} does not exist", nameof(categoryId));
                 }
 
+                // Generate a new product ID by finding the highest existing ID and adding 1
+                int newProductId = 1;
+                if (await _context.Products.AnyAsync())
+                {
+                    newProductId = await _context.Products.MaxAsync(p => p.ProductId) + 1;
+                }
+
+
                 // Create domain object from factory
-                var item = _productFactory.CreateProductItem(productId, categoryId, productName, price);
+                var item = _productFactory.CreateProductItem(newProductId, categoryId, productName, price, quantity);
 
                 // Map from domain model to database entity
                 var productEntity = new Product
@@ -265,7 +273,7 @@ namespace Inventory_Management.Managers
         }
 
         // Updates an existing product in the database
-        public async Task<Product> UpdateProduct(int productId, string productName, decimal price, int? categoryId)
+        public async Task<Product> UpdateProduct(int productId, string productName, decimal price, int? categoryId, int quantity)
         {
             try
             {
@@ -282,6 +290,16 @@ namespace Inventory_Management.Managers
                 if (price < 0)
                 {
                     throw new ArgumentException("Price cannot be negative", nameof(price));
+                }
+
+                if (categoryId <= 0)
+                {
+                    throw new ArgumentException("Category ID must be greater than zero", nameof(categoryId));
+                }
+
+                if (quantity < 0)
+                {
+                    throw new ArgumentException("Quantity cannot be negative", nameof(quantity));
                 }
 
                 // Fetch the product from the database
@@ -305,6 +323,8 @@ namespace Inventory_Management.Managers
                 // Update the product details
                 product.ProductName = productName;
                 product.Price = price;
+                product.Quantity = quantity;
+                UpdateProductQuantity(productId, quantity).Wait(); // Update the quantity in the database
 
                 // Save changes to the database
                 await _context.SaveChangesAsync();

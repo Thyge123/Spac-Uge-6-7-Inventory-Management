@@ -8,5 +8,6 @@ namespace Inventory_Management.Interfaces
         int CategoryId { get; set; }
         string ProductName { get; set; }
         decimal Price { get; set; }
+        int Quantity { get; set; }
     }
 }
