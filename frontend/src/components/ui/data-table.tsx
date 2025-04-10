@@ -3,8 +3,10 @@ import {
     flexRender,
     getCoreRowModel,
     getPaginationRowModel,
+    getSortedRowModel,
     useReactTable,
     type PaginationState,
+    type SortingState,
 } from "@tanstack/react-table";
 
 import {
@@ -15,7 +17,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { type Dispatch, type SetStateAction } from 'react';
+import { useState, type Dispatch, type SetStateAction } from 'react';
 import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
@@ -39,6 +41,8 @@ export function DataTable<TData, TValue>({
     pageCount,
 }: DataTableProps<TData, TValue>) {
 
+    const [sorting, setSorting] = useState<SortingState>([]);
+
     const table = useReactTable({
         data,
         columns,
@@ -46,11 +50,16 @@ export function DataTable<TData, TValue>({
         getCoreRowModel: getCoreRowModel(),
         manualPagination: true,
         onPaginationChange: setPagination,
+        getSortedRowModel: getSortedRowModel(),
+        onSortingChange: setSorting,
         state: {
-            pagination
+            pagination,
+            sorting
         },
-        pageCount: pageCount
+        pageCount: pageCount,
     });
+
+    console.log(sorting[0]);
 
     return (
         <div className="container mx-auto py-10">
@@ -155,28 +164,6 @@ export function DataTable<TData, TValue>({
                     </Pagination>
                     : null}
             </div>
-            {/* <div className="flex items-center justify-end space-x-2 py-4">
-
-
-
-
-
-                <span className="flex items-center gap-1">
-                    | Go to page:
-                    <input
-                        type="number"
-                        min="1"
-                        max={table.getPageCount()}
-                        defaultValue={table.getState().pagination.pageIndex + 1}
-                        onChange={e => {
-                            const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                            table.setPageIndex(page);
-                        }}
-                        className="border p-1 rounded w-16"
-                    />
-                </span>
-                
-            </div> */}
             <div className="rounded-md border overflow-auto">
                 <Table>
                     <TableHeader className='bg-sidebar'>

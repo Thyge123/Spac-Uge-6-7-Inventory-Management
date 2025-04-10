@@ -9,11 +9,22 @@ import type { ProductCategory, Product } from '@/types';
 import { DataTable } from '@/components/ui/data-table';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { ArrowUpDown } from 'lucide-react';
 
 const columns: ColumnDef<Product>[] = [
     {
-        header: "Id",
         accessorKey: "productId",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    Id
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
         cell: ({ row }) => {
             const id: number = row.getValue("productId");
             return (
@@ -24,12 +35,30 @@ const columns: ColumnDef<Product>[] = [
         }
     },
     {
-        header: "Name",
-        accessorKey: "productName"
+        accessorKey: "productName",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    Name
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
     },
     {
-        header: "Price",
         accessorKey: "price",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    Price
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
         cell: ({ row }) => {
             const amount = parseFloat(row.getValue("price"));
             const formatted = new Intl.NumberFormat("en-US", {
@@ -41,8 +70,17 @@ const columns: ColumnDef<Product>[] = [
         },
     },
     {
-        header: "Category",
         accessorKey: "category",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    Category
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
         cell: ({ row }) => {
             const { categoryId, categoryName }: ProductCategory = row.getValue("category");
             return (
@@ -50,11 +88,25 @@ const columns: ColumnDef<Product>[] = [
                     {categoryId + " | " + categoryName}
                 </Link>
             );
+        },
+        sortingFn: (rowA, rowB, _columnId) => {
+            const idA = rowA.original.category.categoryId;
+            const idB = rowB.original.category.categoryId;
+            return idA - idB;
         }
     },
     {
-        header: "Quantity",
-        accessorKey: "quantity"
+        accessorKey: "quantity",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    Quantity
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
     }
 ];
 
@@ -62,6 +114,7 @@ const ITEMS_PER_PAGE = 40;
 
 export const ProductList: React.FC = () => {
     const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: ITEMS_PER_PAGE });
+
     // const ITEMS_PER_PAGE = 10;
     // const [showCreateForm, setShowCreateForm] = useState(false);
     // const [newProduct, setNewProduct] = useState<
@@ -76,7 +129,7 @@ export const ProductList: React.FC = () => {
 
     const { data, isLoading, error } = useProducts({
         pageNumber: pagination.pageIndex + 1,
-        pageSize: pagination.pageSize
+        pageSize: pagination.pageSize,
     });
 
 
@@ -149,7 +202,6 @@ export const ProductList: React.FC = () => {
     //     }));
     // };
 
-    console.log(data?.products);
 
     if (isLoading) {
         return <div className="p-6">Loading products...</div>;
