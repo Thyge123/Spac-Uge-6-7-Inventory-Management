@@ -4,16 +4,29 @@ import {
 import {
     ColumnDef,
     type PaginationState,
+    type SortingState,
 } from "@tanstack/react-table";
 import type { ProductCategory, Product } from '@/types';
 import { DataTable } from '@/components/ui/data-table';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { ArrowUpDown } from 'lucide-react';
+import { convertToSortBy } from '@/pages/products/utils/ordering';
 
 const columns: ColumnDef<Product>[] = [
     {
-        header: "Id",
         accessorKey: "productId",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() ? column.getIsSorted() === "asc" : true)}>
+                    Id
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
         cell: ({ row }) => {
             const id: number = row.getValue("productId");
             return (
@@ -24,12 +37,30 @@ const columns: ColumnDef<Product>[] = [
         }
     },
     {
-        header: "Name",
-        accessorKey: "productName"
+        accessorKey: "productName",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    Name
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
     },
     {
-        header: "Price",
         accessorKey: "price",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    Price
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
         cell: ({ row }) => {
             const amount = parseFloat(row.getValue("price"));
             const formatted = new Intl.NumberFormat("en-US", {
@@ -41,8 +72,17 @@ const columns: ColumnDef<Product>[] = [
         },
     },
     {
-        header: "Category",
         accessorKey: "category",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    Category
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
         cell: ({ row }) => {
             const { categoryId, categoryName }: ProductCategory = row.getValue("category");
             return (
@@ -50,11 +90,20 @@ const columns: ColumnDef<Product>[] = [
                     {categoryId + " | " + categoryName}
                 </Link>
             );
-        }
+        },
     },
     {
-        header: "Quantity",
-        accessorKey: "quantity"
+        accessorKey: "quantity",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    Quantity
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
     }
 ];
 
@@ -62,6 +111,7 @@ const ITEMS_PER_PAGE = 40;
 
 export const ProductList: React.FC = () => {
     const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: ITEMS_PER_PAGE });
+    const [sorting, setSorting] = useState<SortingState>([]);
     // const ITEMS_PER_PAGE = 10;
     // const [showCreateForm, setShowCreateForm] = useState(false);
     // const [newProduct, setNewProduct] = useState<
@@ -76,7 +126,9 @@ export const ProductList: React.FC = () => {
 
     const { data, isLoading, error } = useProducts({
         pageNumber: pagination.pageIndex + 1,
-        pageSize: pagination.pageSize
+        pageSize: pagination.pageSize,
+        sortBy: sorting.length ? convertToSortBy(sorting[0].id) : "productId",
+        isDescending: sorting.length ? sorting[0].desc : false
     });
 
 
@@ -149,7 +201,6 @@ export const ProductList: React.FC = () => {
     //     }));
     // };
 
-    console.log(data?.products);
 
     if (isLoading) {
         return <div className="p-6">Loading products...</div>;
@@ -190,6 +241,7 @@ export const ProductList: React.FC = () => {
             data={data.products}
             tableTitle='Products'
             pagination={pagination} setPagination={setPagination} pageCount={data.totalPages}
+            sorting={sorting} setSorting={setSorting}
         />
     );
 };
