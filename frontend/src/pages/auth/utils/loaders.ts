@@ -1,20 +1,15 @@
 import { redirect } from 'react-router-dom';
-
-export const userIsLoggedIn = () => {
-    return Boolean(sessionStorage.getItem("authToken"));
-};
+import AuthService from '@/pages/auth/services/AuthService';
 
 export const authLoader = () => {
-    console.log(userIsLoggedIn());
-    if (!userIsLoggedIn()) {
+    if (!AuthService.userIsLoggedIn()) {
         return redirect("/login");
     }
     return null;
 };
 
 export const loginLoader = () => {
-
-    if (userIsLoggedIn()) {
+    if (AuthService.userIsLoggedIn()) {
         return redirect("/products");
     }
     return null;

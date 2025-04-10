@@ -14,6 +14,7 @@ import { DashboardSidebar } from '@/components/layout/DashboardSidebar';
 import { DashboardNavbar } from '@/components/layout/DashboardNavbar';
 import { LoginForm } from '@/pages/auth/components/LoginForm';
 import { authLoader, loginLoader } from '@/pages/auth/utils/loaders';
+import { LogoutPage } from '@/pages/auth/components/LogoutPage';
 
 const RootLayout: React.FC = () => (
     <SidebarProvider>
@@ -54,9 +55,10 @@ const router = createBrowserRouter([
             { path: "products/:id", Component: ProductDetail },
             { path: "products/categories", Component: ProductCategoriesList },
             { path: "products/categories/:id", Component: ProductCategoryDetail },
+            { path: "logout", Component: LogoutPage }
         ],
     },
-    { path: "login", Component: LoginForm, loader: loginLoader }
+    { path: "login", Component: LoginForm, loader: loginLoader },
 ]);
 
 export default function App() {

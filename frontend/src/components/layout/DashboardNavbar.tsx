@@ -4,27 +4,22 @@ import {
     NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import type React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
-import { userIsLoggedIn } from '@/pages/auth/utils/loaders';
-import AuthService from '@/pages/auth/services/AuthService';
 
 const baseLinks = [
     {
         title: "Home",
         href: "/",
     },
-
+    {
+        title: "Logout",
+        href: "/logout"
+    }
 ];
 
 export const DashboardNavbar: React.FC = () => {
     const location = useLocation();
-    const navigate = useNavigate();
-
-    const logout = () => {
-        AuthService.logout();
-        navigate(0);
-    };
 
     return (
         <NavigationMenu>
@@ -45,12 +40,9 @@ export const DashboardNavbar: React.FC = () => {
             </NavigationMenuList>
             <NavigationMenuList>
                 <NavigationMenuItem>
-                    {userIsLoggedIn()
-                        ? <a onClick={() => logout()}>
-                            Logout
-                        </a>
-                        : null
-                    }
+                    <Link to={"/logout"} className="group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground">
+                        Logout
+                    </Link>
                 </NavigationMenuItem>
             </NavigationMenuList>
         </NavigationMenu>
