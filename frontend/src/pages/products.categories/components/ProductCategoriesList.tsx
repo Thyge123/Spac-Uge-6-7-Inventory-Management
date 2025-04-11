@@ -1,7 +1,8 @@
 import { DataTable } from '@/components/ui/data-table';
 import { useProductCategories } from '@/pages/products.categories/queries/ProductCategoryQueries';
 import type { ProductCategory } from '@/types';
-import type { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const columns: ColumnDef<ProductCategory>[] = [
@@ -24,25 +25,28 @@ const columns: ColumnDef<ProductCategory>[] = [
 ];
 
 export const ProductCategoriesList: React.FC = () => {
-    const { data: categories, isLoading, error } = useProductCategories();
+    const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 40 });
+    const { data, isLoading, error } = useProductCategories({
+        pageNumber: pagination.pageIndex + 1,
+        pageSize: pagination.pageSize,
+    });
+    // if (isLoading) {
+    //     return <div className="p-6">Loading products...</div>;
+    // }
 
-    if (isLoading) {
-        return <div className="p-6">Loading products...</div>;
-    }
+    // if (error) {
+    //     return <div className="p-6 text-red-500">Error: {error.message}</div>;
+    // }
 
-    if (error) {
-        return <div className="p-6 text-red-500">Error: {error.message}</div>;
-    }
-
-    if (!categories?.length) {
-        return (
-            <div className="p-6">
-                <p className="mb-4">No product categories found</p>
-            </div>
-        );
-    }
+    // if (!categories?) {
+    //     return (
+    //         <div className="p-6">
+    //             <p className="mb-4">No product categories found</p>
+    //         </div>
+    //     );
+    // }
 
     return (
-        <DataTable columns={columns} data={categories} />
+        <DataTable tableTitle='Product Categories' columns={columns} data={data?.categories || []} pagination={pagination} setPagination={setPagination} pageCount={data?.totalPages} />
     );
 };

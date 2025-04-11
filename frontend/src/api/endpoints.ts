@@ -9,7 +9,7 @@ export const ProductEndpoints = {
 } as const;
 
 export const ProductCategoryEndpoints = {
-    getAll: () => `/categories`,
+    getAll: (params: string) => `/categories${params ? `?${params}` : ""}`,
     getById: (id: string | number) => `/categories/${id}`,
     // getProductsFromOrder: (orderToken: string) => `/product/order-products?token=${orderToken}`,
 } as const;

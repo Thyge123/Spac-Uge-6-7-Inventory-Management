@@ -1,6 +1,7 @@
 import axiosClient from "@/api/axiosClient";
 import { ProductCategoryEndpoints } from '@/api/endpoints';
-import { type ProductCategory } from "@/types";
+import { convertToURLSearchParams } from '@/lib/utils';
+import { type AllProductCategoriesResponse, type PaginationParams, type ProductCategory } from "@/types";
 
 /**
  * Service class for handling product category-related API calls
@@ -10,11 +11,12 @@ export default class ProductCategoryService {
      * Fetch all product categories with optional sorting and ordering
      * @returns Promise with all product category data
      */
-    static async getAll(): Promise<ProductCategory[]> {
+    static async getAll(params?: PaginationParams): Promise<AllProductCategoriesResponse> {
+        const queryParams = params ? convertToURLSearchParams(params) : '';
+
         const response = await axiosClient.get(
-            ProductCategoryEndpoints.getAll()
+            ProductCategoryEndpoints.getAll(queryParams)
         );
-        console.log(response.data);
         return response.data;
     }
 

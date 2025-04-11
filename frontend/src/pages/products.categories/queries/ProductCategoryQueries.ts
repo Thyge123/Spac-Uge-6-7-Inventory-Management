@@ -1,11 +1,11 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { queryKeys } from '@/api/queryClient';
 import ProductCategoryService from '@/pages/products.categories/services/ProductCategoryService';
-import type { ApiError, ProductCategory } from '@/types';
+import type { ApiError, PaginationParams, ProductCategory } from '@/types';
 
-export const useProductCategories = (): UseQueryResult<ProductCategory[], Error> => {
+export const useProductCategories = (params?: PaginationParams) => {
     return useQuery({
-        queryKey: [...queryKeys.products.categories.all],
+        queryKey: [...queryKeys.products.categories.all, params],
         queryFn: () => ProductCategoryService.getAll(),
     });
 };

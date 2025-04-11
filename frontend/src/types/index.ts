@@ -3,7 +3,7 @@ export type PaginationParams = {
     pageSize: number;
 };
 
-export type PaginatedResponseResponse = {
+export type PaginatedResponse = {
     totalCount: number,
     pageNumber: number,
     pageSize: number,
@@ -31,12 +31,16 @@ export type ProductQueryParams = {
 
 export type AllProductsResponse = {
     products: Product[];
-} & PaginatedResponseResponse;
+} & PaginatedResponse;
 
 export type ProductCategory = {
     categoryId: number;
     categoryName: string;
 };
+
+export type AllProductCategoriesResponse = {
+    categories: ProductCategory[];
+} & PaginatedResponse;
 
 export type OrderItemDto = {
     productId: number;
